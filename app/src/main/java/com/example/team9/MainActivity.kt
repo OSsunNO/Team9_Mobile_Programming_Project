@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
             val rowIter = sheet.rowIterator()
             //행 넘버 변수 만들기
             var rowno = 0
-            //MutableList 생성
+            // MutableList 생성
             var items: MutableList<CCTVLocation> = mutableListOf()
 
             while (rowIter.hasNext()) {
