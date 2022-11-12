@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         var excelList = readExcelFileFromAssets()
         val db = FirebaseFirestore.getInstance().collection("cctvLocation")
-        Log.d("ITM", "${excelList[0]}")
+        Log.d("ITM", "${excelList[1]}")
 
     }
     data class CCTVLocation(val num:String, val address:String,
