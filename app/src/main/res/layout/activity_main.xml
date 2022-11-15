@@ -12,7 +12,7 @@
        android:id="@+id/gSignInBtn"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
-       android:text="Sign in with google"
+       android:text="Namyeong Checking."
        tools:layout_editor_absoluteX="-33dp"
        tools:layout_editor_absoluteY="52dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
