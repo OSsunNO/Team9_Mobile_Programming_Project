@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Log.d("ITM", "Hello")
 
+
         var excelList = readExcelFileFromAssets()
         val db = FirebaseFirestore.getInstance().collection("cctvLocation")
         Log.d("ITM", "${excelList[0]}")
