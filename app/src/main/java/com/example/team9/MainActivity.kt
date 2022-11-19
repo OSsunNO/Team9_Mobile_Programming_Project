@@ -35,21 +35,10 @@ class MainActivity : AppCompatActivity() {
 //    private lateinit var googleSignInClient: GoogleSignInClient
 
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        Log.d("ITM", "Hello")
-
-
-        var excelList = readExcelFileFromAssets()
-        val db = FirebaseFirestore.getInstance().collection("cctvLocation")
-        Log.d("ITM", "${excelList[0]}")
-
-    }
     data class CCTVLocation(val num:String, val address:String,
                             val cameraNum:String, val latitude:String, val longitude:String)
 
+    // the function which loads the .xls file, stores the data in mutable list, and return it
     private fun readExcelFileFromAssets(): MutableList<CCTVLocation> {
         var itemList: MutableList<CCTVLocation> = mutableListOf();
         try {
@@ -108,4 +97,45 @@ class MainActivity : AppCompatActivity() {
         }
         return itemList
     }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        Log.d("ITM", "Hello")
+
+        var excelList = readExcelFileFromAssets()
+
+        // the code for uploading the cctv data to firestore
+        /*val db = Firebase.firestore
+
+        for (i in 1..excelList.size-1 ) {
+            var cctv = hashMapOf(
+                "num" to excelList[i].num,
+                "address" to excelList[i].address,
+                "cameraNum" to excelList[i].cameraNum,
+                "latitude" to excelList[i].latitude,
+                "longitude" to excelList[i].longitude
+            )
+
+            db.collection("cctvs").document("cctvInfo$i")
+                .set(cctv)
+                .addOnSuccessListener { Log.d("firestore", "Success!") }
+                .addOnFailureListener { e-> Log.w("firestore", "Error", e) }
+        }*/
+
+//        val db = FirebaseFirestore.getInstance().collection("cctvLocation")
+//        Log.d("ITM", "${excelList[0]}")
+
+
+
+
+
+
+    }
+
+
+
+
+
 }
