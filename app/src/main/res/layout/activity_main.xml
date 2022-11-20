@@ -8,11 +8,17 @@
     tools:context=".MainActivity">
 
 
-   <com.google.android.material.button.MaterialButton
-       android:id="@+id/gSignInBtn"
+<!--   <com.google.android.material.button.MaterialButton-->
+<!--       android:id="@+id/gSignInBtn"-->
+<!--       android:layout_width="match_parent"-->
+<!--       android:layout_height="match_parent"-->
+<!--       android:text="Namyeong Checking."-->
+<!--       tools:layout_editor_absoluteX="-33dp"-->
+<!--       tools:layout_editor_absoluteY="52dp" />-->
+
+   <fragment
+       android:id="@+id/map"
+       android:name="com.google.android.gms.maps.SupportMapFragment"
        android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:text="Namyeong Checking."
-       tools:layout_editor_absoluteX="-33dp"
-       tools:layout_editor_absoluteY="52dp" />
+       android:layout_height="match_parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

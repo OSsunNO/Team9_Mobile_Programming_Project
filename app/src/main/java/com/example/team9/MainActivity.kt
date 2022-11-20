@@ -31,10 +31,6 @@ import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
 
-//    private lateinit var auth: FirebaseAuth
-//    private lateinit var googleSignInClient: GoogleSignInClient
-
-
     data class CCTVLocation(val num:String, val address:String,
                             val cameraNum:String, val latitude:String, val longitude:String)
 
