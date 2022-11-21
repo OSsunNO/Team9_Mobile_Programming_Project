@@ -1,52 +1,73 @@
 package com.example.team9
 
-import android.app.Activity
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthCredential
-import com.google.firebase.auth.GoogleAuthProvider
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import org.apache.poi.hssf.usermodel.HSSFCell
 import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.poifs.filesystem.POIFSFileSystem
-import org.apache.poi.xssf.usermodel.XSSFCell
-import org.apache.poi.xssf.usermodel.XSSFRow
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
 
-//    private lateinit var auth: FirebaseAuth
-//    private lateinit var googleSignInClient: GoogleSignInClient
+    private val frame:  FrameLayout by lazy { // activity_main의 화면 부분
+        findViewById(R.id.fl_container)
+    }
 
-
+    private val bottomNagivationView: BottomNavigationView by lazy { // 하단 네비게이션 바
+        findViewById(R.id.bottombar)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d("ITM", "Hello")
 
+        // 애플리케이션 실행 후 첫 화면 설정
+        supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
+
+        // 하단 네비게이션 바 클릭 이벤트 설정
+        bottomNagivationView.setOnItemSelectedListener{item ->
+            when(item.itemId) {
+                R.id.map -> {
+                    replaceFragment(FragmentOne())
+                    true
+                }
+                R.id.siren -> {
+                    replaceFragment(FragmentTwo())
+                    true
+                }
+                R.id.emergency -> {
+                    replaceFragment(FragmentThree())
+                    true
+                }
+                R.id.setting -> {
+                    replaceFragment(FragmentFour())
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        Log.d("ITM", "Hello")
 
         var excelList = readExcelFileFromAssets()
         val db = FirebaseFirestore.getInstance().collection("cctvLocation")
         Log.d("ITM", "${excelList[0]}")
 
     }
+    //fragment chaging function
+    fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
+    }
+
+
     data class CCTVLocation(val num:String, val address:String,
                             val cameraNum:String, val latitude:String, val longitude:String)
 
