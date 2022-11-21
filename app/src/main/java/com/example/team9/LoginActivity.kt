@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -12,7 +13,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-
+//right
 class LoginActivity : AppCompatActivity() {
     var auth: FirebaseAuth? = null
     val GOOGLE_REQUEST_CODE = 99
@@ -27,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this,gso)
-        findViewById<Button>(R.id.googleSignInBtn).setOnClickListener{
+        findViewById<ImageButton>(R.id.googleSignInBtn).setOnClickListener{
             signIn()
         }
     }
