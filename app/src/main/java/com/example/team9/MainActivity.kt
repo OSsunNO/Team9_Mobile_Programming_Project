@@ -100,7 +100,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Log.d("ITM", "Hello")
 
-        var excelList = readExcelFileFromAssets()
+        // the mutable list which contains cctv data
+        //var excelList = readExcelFileFromAssets()
 
         // the code for uploading the cctv data to firestore
         /*val db = Firebase.firestore
