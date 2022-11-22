@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/map"
+        android:title="map"
+        android:icon="@drawable/map" />
+    <item android:id="@+id/siren"
+        android:title="siren"
+        android:icon="@drawable/siren" />
+    <item android:id="@+id/emergency"
+        android:title="emergency"
+        android:icon="@drawable/emergency" />
+    <item android:id="@+id/setting"
+        android:title="setting"
+        android:icon="@drawable/setting" />
+
+</menu>
