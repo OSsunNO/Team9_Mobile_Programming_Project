@@ -1,9 +1,20 @@
 package com.example.team9
 
+import android.content.Context
+import android.content.Intent
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -13,6 +24,8 @@ import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.poifs.filesystem.POIFSFileSystem
 import java.io.InputStream
+import java.lang.Math.sqrt
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,9 +37,27 @@ class MainActivity : AppCompatActivity() {
         findViewById(R.id.bottombar)
     }
 
+    private var sensorManager: SensorManager? = null
+    private var acceleration = 0f
+    private var currentAcceleration = 0f
+    private var lastAcceleration = 0f
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+        Objects.requireNonNull(sensorManager)!!
+            .registerListener(sensorListener, sensorManager!!
+                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
+
+        acceleration = 10f
+        currentAcceleration = SensorManager.GRAVITY_EARTH
+        lastAcceleration = SensorManager.GRAVITY_EARTH
+
 
         // 애플리케이션 실행 후 첫 화면 설정
         supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
@@ -62,6 +93,81 @@ class MainActivity : AppCompatActivity() {
         Log.d("ITM", "${excelList[0]}")
 
     }
+    private val sensorListener: SensorEventListener = object : SensorEventListener {
+        override fun onSensorChanged(event: SensorEvent) {
+
+            // Fetching x,y,z values
+            val x = event.values[0]
+            val y = event.values[1]
+            val z = event.values[2]
+            lastAcceleration = currentAcceleration
+
+            // Getting current accelerations
+            // with the help of fetched x,y,z values
+            currentAcceleration = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+            val delta: Float = currentAcceleration - lastAcceleration
+            acceleration = acceleration * 0.9f + delta
+
+            // Display a Toast message if
+            // acceleration value is over 12
+            if (acceleration > 12) {
+//                Toast.makeText(applicationContext, "Shake event detected", Toast.LENGTH_SHORT).show()
+               showDialog()
+
+
+//                val intent2 = Intent(Intent.ACTION_SENDTO).apply{
+//                    data = Uri.parse("tel:029706468")
+//
+//                }
+//                intent2.putExtra("smsbody","message")
+
+
+//                startActivity(intent2)
+
+            }
+        }
+        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+    }
+
+    override fun onResume() {
+        sensorManager?.registerListener(sensorListener, sensorManager!!.getDefaultSensor(
+            Sensor .TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
+        super.onResume()
+    }
+
+    override fun onPause() {
+        sensorManager!!.unregisterListener(sensorListener)
+        super.onPause()
+    }
+
+    private fun showDialog(){
+
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+
+        builder.setTitle("로그인")
+
+        val inflater: LayoutInflater = layoutInflater
+        builder.setView(inflater.inflate(R.layout.dialog_sensor,null))
+
+        builder. setPositiveButton("Ok"){
+
+                p0, p1-> val intent = Intent(Intent.ACTION_DIAL).apply{
+            data = Uri.parse("tel:029706468")
+        }
+            Handler(Looper.getMainLooper()).postDelayed({
+                startActivity(intent) }, 15000)
+        }
+
+        builder.setNegativeButton("Cancel"){
+            dialog,p1->dialog.cancel()
+        }
+
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.show()
+    }
+
+
+    //여기서 부터 fragment코드임
     //fragment chaging function
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()

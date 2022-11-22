@@ -3,15 +3,20 @@ package com.example.team9
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
+import androidx.core.content.ContentProviderCompat.requireContext
+import com.example.team9.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.fragment_two.*
 
 class SirenDialog(activity: Activity,): Dialog(activity) {
 
     private lateinit var okButton: Button
+
+//    private var mediaPlayer: MediaPlayer?=null
 
     @SuppressLint("CheckResult", "ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,6 +26,9 @@ class SirenDialog(activity: Activity,): Dialog(activity) {
         setContentView(R.layout.dialog_siren)
 
         val window = window
+
+
+
         if (window != null) {
 
             window.setBackgroundDrawableResource(R.color.blackDim_100)
@@ -38,11 +46,14 @@ class SirenDialog(activity: Activity,): Dialog(activity) {
         }
 
         initListener()
+
     }
 
     private fun initListener() {
         okButton = findViewById(R.id.btn_ok)
+
         okButton.setOnClickListener {
+//            mediaPlayer?.pause()
 
             dismiss()
         }
