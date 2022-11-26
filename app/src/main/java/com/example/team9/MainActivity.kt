@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         sensorManager!!.unregisterListener(sensorListener)
         super.onPause()
     }
-
+//function for showing dialog alert
     private fun showDialog(){
 
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
