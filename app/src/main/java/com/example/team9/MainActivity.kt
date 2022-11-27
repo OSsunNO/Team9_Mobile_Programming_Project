@@ -1,5 +1,6 @@
 package com.example.team9
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -7,18 +8,23 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.telephony.SmsManager
+import android.telephony.SmsMessage
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.normal.TedPermission
 import org.apache.poi.hssf.usermodel.HSSFCell
 import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -28,6 +34,8 @@ import java.lang.Math.sqrt
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
+
+
 
     private val frame:  FrameLayout by lazy { // activity_main의 화면 부분
         findViewById(R.id.fl_container)
@@ -45,7 +53,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
 
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -94,6 +101,7 @@ class MainActivity : AppCompatActivity() {
 
     }
     private val sensorListener: SensorEventListener = object : SensorEventListener {
+        @RequiresApi(Build.VERSION_CODES.M)
         override fun onSensorChanged(event: SensorEvent) {
 
             // Fetching x,y,z values
@@ -112,17 +120,8 @@ class MainActivity : AppCompatActivity() {
             // acceleration value is over 12
             if (acceleration > 12) {
 //                Toast.makeText(applicationContext, "Shake event detected", Toast.LENGTH_SHORT).show()
-               showDialog()
-
-
-//                val intent2 = Intent(Intent.ACTION_SENDTO).apply{
-//                    data = Uri.parse("tel:029706468")
-//
-//                }
-//                intent2.putExtra("smsbody","message")
-
-
-//                startActivity(intent2)
+                //다이얼로그를 보여준다
+                showDialog()
 
             }
         }
@@ -139,32 +138,95 @@ class MainActivity : AppCompatActivity() {
         sensorManager!!.unregisterListener(sensorListener)
         super.onPause()
     }
-//function for showing dialog alert
+    //function for showing dialog alert
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun showDialog(){
 
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
 
-        builder.setTitle("로그인")
+        builder.setTitle("신고하시겠습니까?")
 
         val inflater: LayoutInflater = layoutInflater
         builder.setView(inflater.inflate(R.layout.dialog_sensor,null))
 
-        builder. setPositiveButton("Ok"){
 
-                p0, p1-> val intent = Intent(Intent.ACTION_DIAL).apply{
-            data = Uri.parse("tel:029706468")
-        }
-            Handler(Looper.getMainLooper()).postDelayed({
-                startActivity(intent) }, 15000)
+        builder. setPositiveButton("전화"){
+
+                p0, p1-> val intent = Intent(Intent.ACTION_CALL).apply{
+            data = Uri.parse("tel:01077252924")
         }
 
-        builder.setNegativeButton("Cancel"){
-            dialog,p1->dialog.cancel()
+            //주석 없애면 handler로 시간초 설정할 수 있어
+//            Handler(Looper.getMainLooper()).postDelayed({
+//        }//, 15000)
+            requestPermission {
+                startActivity(intent) }}
+
+        builder.setNeutralButton("닫기"){
+                dialog,p1->   dialog.cancel()
         }
 
+        builder.setNegativeButton("문자"){
+                dialog,p1->
+//            val intent2 = Intent(Intent(Intent.ACTION_SENDTO).apply
+//            { data=Uri.parse("smsto:029706468") })
+//            intent2.putExtra("sms_body", "신고합니다. 살려주세요.")
+//            requestPermission {
+//                startActivity(intent2) }
+
+            val smsManager:SmsManager
+            val policenumber = "01077252924"
+            val msg = "안녕하세요"
+            if (Build.VERSION.SDK_INT>=23) {
+                //if SDK is greater that or equal to 23 then
+                //this is how we will initialize the SmsManager
+                smsManager = this.getSystemService(SmsManager::class.java)
+            }
+            else{
+                //if user's SDK is less than 23 then
+                //SmsManager will be initialized like this
+                smsManager = SmsManager.getDefault()
+            }
+
+            // on below line we are sending text message.
+            requestPermission {
+                smsManager.sendTextMessage(policenumber, null, msg, null, null)
+            }
+
+//            val sms =   applicationContext.getSystemService(SmsManager::class.java)
+
+//            sms.sendTextMessage(policenumber.toString(),null,msg,null,null)
+        }
         val alertDialog: AlertDialog = builder.create()
+
+        //다이얼로그를 한번만 보이는건 실패함
         alertDialog.show()
+//    if(alertDialog.isShowing){
+//
+//        alertDialog.dismiss()
+//    }
     }
+
+    //permission이 있는지 확인
+    private fun requestPermission(logic : () -> Unit){
+        TedPermission.create()
+            .setPermissionListener(object : PermissionListener {
+                override fun onPermissionGranted() {
+                    logic()
+                }
+                override fun onPermissionDenied(deniedPermissions: List<String>) {
+                    Toast.makeText( this@MainActivity,
+                        "권한을 허가해주세요.",
+                        Toast.LENGTH_SHORT).show()
+                }
+            })
+            .setDeniedMessage("권한을 허용해주세요. [설정] > [앱 및 알림] > [고급] > [앱 권한]")
+            .setPermissions(Manifest.permission.CALL_PHONE,Manifest.permission.SEND_SMS)
+            .check()
+    }
+
+
+
 
 
     //여기서 부터 fragment코드임
@@ -236,3 +298,4 @@ class MainActivity : AppCompatActivity() {
         return itemList
     }
 }
+
