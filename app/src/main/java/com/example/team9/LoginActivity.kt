@@ -19,6 +19,15 @@ class LoginActivity : AppCompatActivity() {
     val GOOGLE_REQUEST_CODE = 99
     val TAG = "googleLogin"
     private lateinit var googleSignInClient: GoogleSignInClient
+
+    override fun onStart() {
+        super.onStart()
+        if(auth?.currentUser != null){
+            loginSuccess()
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -55,6 +64,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth?.signInWithCredential(credential)
@@ -62,7 +72,6 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "로그인 성공")
-                    val user = auth!!.currentUser
                     loginSuccess()
                 } else {
                     // If sign in fails, display a message to the user.
