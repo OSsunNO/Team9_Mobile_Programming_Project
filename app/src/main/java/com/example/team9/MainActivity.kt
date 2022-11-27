@@ -75,8 +75,6 @@ class MainActivity : AppCompatActivity() {
                 .addOnSuccessListener { Log.d("firestore", "Success!") }
                 .addOnFailureListener { e-> Log.w("firestore", "Error", e) }
         }*/
-
-
     }
 
     fun replaceFragment(fragment: Fragment){

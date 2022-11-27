@@ -55,7 +55,7 @@ dependencies {
     // to read Excel file
     implementation 'org.apache.poi:poi:3.9'
     implementation "org.apache.poi:poi-ooxml:3.9"
-
+    // google map
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     implementation 'com.google.maps.android:android-maps-utils:2.3.0'
