@@ -39,8 +39,6 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-
-
     private val frame:  FrameLayout by lazy { // activity_main의 화면 부분
         findViewById(R.id.fl_container)
     }
@@ -57,9 +55,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
-
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 

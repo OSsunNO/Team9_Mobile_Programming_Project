@@ -50,7 +50,7 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.5.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
-    //calling
+    //permission
     implementation 'io.github.ParkSangGwon:tedpermission-normal:3.3.0'
     // firebase
     implementation 'com.google.firebase:firebase-firestore:24.0.2'
