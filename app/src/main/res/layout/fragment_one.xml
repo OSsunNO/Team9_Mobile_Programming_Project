@@ -7,17 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".FragmentOne">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#C0D2F3"
-        android:backgroundTint="#C0D2F3"
-        android:gravity="center"
-        android:text="Fragment One!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mapview"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/abc_search_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

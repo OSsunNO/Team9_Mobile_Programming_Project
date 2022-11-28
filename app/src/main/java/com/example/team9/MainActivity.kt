@@ -1,5 +1,7 @@
 package com.example.team9
 
+
+import androidx.appcompat.app.AppCompatActivity
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -18,11 +20,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getSystemService
-import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.gun0912.tedpermission.PermissionListener
@@ -34,6 +35,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem
 import java.io.InputStream
 import java.lang.Math.sqrt
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -65,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         lastAcceleration = SensorManager.GRAVITY_EARTH
 
 
+
         // 애플리케이션 실행 후 첫 화면 설정
         supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
 
@@ -94,10 +97,26 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("ITM", "Hello")
 
-        var excelList = readExcelFileFromAssets()
-        val db = FirebaseFirestore.getInstance().collection("cctvLocation")
-        Log.d("ITM", "${excelList[0]}")
+        // the mutable list which contains cctv data
+        //var excelList = readExcelFileFromAssets()
 
+        // the code for uploading the cctv data to firestore
+        /*val db = Firebase.firestore
+
+        for (i in 1..excelList.size-1 ) {
+            var cctv = hashMapOf(
+                "num" to excelList[i].num,
+                "address" to excelList[i].address,
+                "cameraNum" to excelList[i].cameraNum,
+                "latitude" to excelList[i].latitude,
+                "longitude" to excelList[i].longitude
+            )
+
+            db.collection("cctvs").document("cctvInfo$i")
+                .set(cctv)
+                .addOnSuccessListener { Log.d("firestore", "Success!") }
+                .addOnFailureListener { e-> Log.w("firestore", "Error", e) }
+        }*/
     }
     private val sensorListener: SensorEventListener = object : SensorEventListener {
         @RequiresApi(Build.VERSION_CODES.M)
@@ -158,8 +177,8 @@ class MainActivity : AppCompatActivity() {
                 p0, p1-> val intentgo = Intent(this,textActivity::class.java)
             startActivity(intentgo)
             val intent = Intent(Intent.ACTION_CALL).apply{
-            data = Uri.parse("tel:114")
-        }
+                data = Uri.parse("tel:114")
+            }
             //주석 없애면 handler로 시간초 설정할 수 있어
 //            Handler(Looper.getMainLooper()).postDelayed({
 //        }//, 15000)
@@ -234,7 +253,7 @@ class MainActivity : AppCompatActivity() {
             .check()
     }
 
-    //여기서 부터 fragment코드임
+
     //fragment chaging function
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
@@ -303,4 +322,3 @@ class MainActivity : AppCompatActivity() {
         return itemList
     }
 }
-
