@@ -1,31 +1,38 @@
 package com.example.team9
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.normal.TedPermission
+import kotlinx.android.synthetic.main.fragment_three.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [FragmentThree.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FragmentThree : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private lateinit var emegencyButton: ImageButton
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        emegencyButton = requireView().findViewById(R.id.emergencybutton)
+        emegencyButton.setOnClickListener {
+            showDialog()
         }
     }
 
@@ -37,23 +44,57 @@ class FragmentThree : Fragment() {
         return inflater.inflate(R.layout.fragment_three, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FragmentThree.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FragmentThree().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun showDialog(){
+
+        val builder: AlertDialog.Builder = AlertDialog.Builder(requireActivity())
+
+        builder.setTitle("긴급상황")
+
+
+        val inflater: LayoutInflater = layoutInflater
+        builder.setView(inflater.inflate(R.layout.dialog_emergency,null))
+
+
+        //주석 없애면 handler로 시간초 설정할 수 있어
+        builder.setPositiveButton("예"){
+
+
+                p0, p1-> activity?.let{
+            val iT = Intent(context, textActivity::class.java)
+            startActivity(iT)
+        }
+            activity?.let{
+                val intent = Intent(Intent.ACTION_CALL).apply{
+                    data = Uri.parse("tel:010772529")
+
                 }
+                startActivity(intent)
             }
+
+        }
+        builder.setNegativeButton("아니오"){
+            p0,p1->
+        }
+
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.getWindow()?.setGravity(Gravity.BOTTOM);
+        alertDialog.show()
+
+
+    }
+    //permission이 있는지 확인
+    private fun requestPermission(logic : () -> Unit){
+        TedPermission.create()
+            .setPermissionListener(object : PermissionListener {
+                override fun onPermissionGranted() {
+                    logic()
+                }
+                override fun onPermissionDenied(deniedPermissions: List<String>) {
+                }
+            })
+            .setDeniedMessage("권한을 허용해주세요. [설정] > [앱 및 알림] > [고급] > [앱 권한]")
+            .setPermissions(Manifest.permission.CALL_PHONE, Manifest.permission.SEND_SMS)
+            .check()
     }
 }

@@ -54,6 +54,8 @@ dependencies {
     // firebase
     implementation 'com.google.firebase:firebase-firestore:24.0.2'
     implementation 'com.google.firebase:firebase-firestore-ktx:24.0.2'
+    // firebase storage
+    implementation 'com.google.firebase:firebase-storage:20.1.0'
     // to read Excel file
     implementation 'org.apache.poi:poi:3.9'
     implementation "org.apache.poi:poi-ooxml:3.9"
