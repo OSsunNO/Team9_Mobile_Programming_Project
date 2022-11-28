@@ -1,6 +1,7 @@
 package com.example.team9
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager
 import android.location.LocationManager
@@ -87,6 +88,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     }
 
     // 내가 사용할 수 있는 Map이 GoogleMap 파라미터를 통해 전달
+    @SuppressLint("SuspiciousIndentation")
     override fun onMapReady(googleMap: GoogleMap) {
         // 파이어 스토어에서 intances get
         val fireStore = FirebaseFirestore.getInstance()
