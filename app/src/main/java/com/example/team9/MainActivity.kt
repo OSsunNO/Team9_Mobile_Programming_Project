@@ -10,6 +10,8 @@ import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.telephony.SmsManager
 import android.telephony.SmsMessage
 import android.util.Log
@@ -53,6 +55,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
 
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -121,6 +125,7 @@ class MainActivity : AppCompatActivity() {
             if (acceleration > 12) {
 //                Toast.makeText(applicationContext, "Shake event detected", Toast.LENGTH_SHORT).show()
                 //다이얼로그를 보여준다
+
                 showDialog()
 
             }
@@ -146,16 +151,20 @@ class MainActivity : AppCompatActivity() {
 
         builder.setTitle("신고하시겠습니까?")
 
+
         val inflater: LayoutInflater = layoutInflater
         builder.setView(inflater.inflate(R.layout.dialog_sensor,null))
 
 
-        builder. setPositiveButton("전화"){
+        //주석 없애면 handler로 시간초 설정할 수 있어
+        builder.setPositiveButton("신고"){
 
-                p0, p1-> val intent = Intent(Intent.ACTION_CALL).apply{
-            data = Uri.parse("tel:01077252924")
+
+                p0, p1-> val intentgo = Intent(this,textActivity::class.java)
+            startActivity(intentgo)
+            val intent = Intent(Intent.ACTION_CALL).apply{
+            data = Uri.parse("tel:114")
         }
-
             //주석 없애면 handler로 시간초 설정할 수 있어
 //            Handler(Looper.getMainLooper()).postDelayed({
 //        }//, 15000)
@@ -174,24 +183,24 @@ class MainActivity : AppCompatActivity() {
 //            requestPermission {
 //                startActivity(intent2) }
 
-            val smsManager:SmsManager
-            val policenumber = "01077252924"
-            val msg = "안녕하세요"
-            if (Build.VERSION.SDK_INT>=23) {
-                //if SDK is greater that or equal to 23 then
-                //this is how we will initialize the SmsManager
-                smsManager = this.getSystemService(SmsManager::class.java)
-            }
-            else{
-                //if user's SDK is less than 23 then
-                //SmsManager will be initialized like this
-                smsManager = SmsManager.getDefault()
-            }
-
-            // on below line we are sending text message.
-            requestPermission {
-                smsManager.sendTextMessage(policenumber, null, msg, null, null)
-            }
+//            val smsManager:SmsManager
+//            val policenumber = "010252924"
+//            val msg = "안녕하세요"
+//            if (Build.VERSION.SDK_INT>=23) {
+//                //if SDK is greater that or equal to 23 then
+//                //this is how we will initialize the SmsManager
+//                smsManager = this.getSystemService(SmsManager::class.java)
+//            }
+//            else{
+//                //if user's SDK is less than 23 then
+//                //SmsManager will be initialized like this
+//                smsManager = SmsManager.getDefault()
+//            }
+//
+//            // on below line we are sending text message.
+//            requestPermission {
+//                smsManager.sendTextMessage(policenumber, null, msg, null, null)
+//            }
 
 //            val sms =   applicationContext.getSystemService(SmsManager::class.java)
 
@@ -201,10 +210,15 @@ class MainActivity : AppCompatActivity() {
 
         //다이얼로그를 한번만 보이는건 실패함
         alertDialog.show()
-//    if(alertDialog.isShowing){
+//여기에 넣으면 안눌러도 15초후에 실행됨
+//        Handler(Looper.getMainLooper()).postDelayed({
+//        }, 15000)
+
+//    if(!alertDialog.isShowing){
 //
-//        alertDialog.dismiss()
-//    }
+//        alertDialog.show()
+//    }else alertDialog.dismiss()
+
     }
 
     //permission이 있는지 확인
@@ -224,10 +238,6 @@ class MainActivity : AppCompatActivity() {
             .setPermissions(Manifest.permission.CALL_PHONE,Manifest.permission.SEND_SMS)
             .check()
     }
-
-
-
-
 
     //여기서 부터 fragment코드임
     //fragment chaging function
