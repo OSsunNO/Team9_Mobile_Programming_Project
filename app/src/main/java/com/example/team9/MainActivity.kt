@@ -1,8 +1,10 @@
 package com.example.team9
 
 
-import androidx.appcompat.app.AppCompatActivity
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Dialog
+import android.app.Instrumentation.ActivityResult
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -12,22 +14,20 @@ import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.telephony.SmsManager
-import android.telephony.SmsMessage
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import android.widget.ToggleButton
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.firestore.FirebaseFirestore
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
+import kotlinx.android.synthetic.main.fragment_four.*
 import org.apache.poi.hssf.usermodel.HSSFCell
 import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -47,16 +47,41 @@ class MainActivity : AppCompatActivity() {
         findViewById(R.id.bottombar)
     }
 
+    val cctvDB: CCTVDB by lazy {CCTVDB.getInstance(this)}
+
+    private lateinit var SensorSwitch: ToggleButton
     private var sensorManager: SensorManager? = null
     private var acceleration = 0f
     private var currentAcceleration = 0f
     private var lastAcceleration = 0f
 
+    private var sensorFlag = 1
+
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+//        try {
+//            //val fragment : Fragment클래스 = supportFragmentManager.findFragmentById(R.id.프래그먼트컨테이너) as Fragment클래스
+//            val fragment : FragmentFour = supportFragmentManager.findFragmentById(R.layout.fragment_four) as FragmentFour
+//            SensorSwitch = fragment.requireView().findViewById(R.id.toggleButton)
+//            SensorSwitch.setOnCheckedChangeListener { _, isChecked ->
+//                if (isChecked) {
+//                    sensorFlag = 1
+//                } else {
+//                    sensorFlag = 0
+//                }
+//            }
+//        }
+//        catch(e: Exception) {
+//            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
+//        }
+
+        requestPermission{}
+
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
 
         Objects.requireNonNull(sensorManager)!!
             .registerListener(sensorListener, sensorManager!!
@@ -65,8 +90,6 @@ class MainActivity : AppCompatActivity() {
         acceleration = 10f
         currentAcceleration = SensorManager.GRAVITY_EARTH
         lastAcceleration = SensorManager.GRAVITY_EARTH
-
-
 
         // 애플리케이션 실행 후 첫 화면 설정
         supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
@@ -98,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         Log.d("ITM", "Hello")
 
         // the mutable list which contains cctv data
-        //var excelList = readExcelFileFromAssets()
+//        var excelList = readExcelFileFromAssets()
 
         // the code for uploading the cctv data to firestore
         /*val db = Firebase.firestore
@@ -118,6 +141,7 @@ class MainActivity : AppCompatActivity() {
                 .addOnFailureListener { e-> Log.w("firestore", "Error", e) }
         }*/
     }
+
     private val sensorListener: SensorEventListener = object : SensorEventListener {
         @RequiresApi(Build.VERSION_CODES.M)
         override fun onSensorChanged(event: SensorEvent) {
@@ -136,13 +160,13 @@ class MainActivity : AppCompatActivity() {
 
             // Display a Toast message if
             // acceleration value is over 12
-            if (acceleration > 12) {
+            if (acceleration>12&&sensorFlag==1){
+                sensorFlag = 0
+                showDialog()
+            }
+
 //                Toast.makeText(applicationContext, "Shake event detected", Toast.LENGTH_SHORT).show()
                 //다이얼로그를 보여준다
-
-                showDialog()
-
-            }
         }
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
     }
@@ -157,82 +181,45 @@ class MainActivity : AppCompatActivity() {
         sensorManager!!.unregisterListener(sensorListener)
         super.onPause()
     }
+
+
     //function for showing dialog alert
     @RequiresApi(Build.VERSION_CODES.M)
     private fun showDialog(){
-
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-
         builder.setTitle("신고하시겠습니까?")
-
 
         val inflater: LayoutInflater = layoutInflater
         builder.setView(inflater.inflate(R.layout.dialog_sensor,null))
 
-
         //주석 없애면 handler로 시간초 설정할 수 있어
         builder.setPositiveButton("신고"){
-
-
                 p0, p1-> val intentgo = Intent(this,textActivity::class.java)
             startActivity(intentgo)
             val intent = Intent(Intent.ACTION_CALL).apply{
-                data = Uri.parse("tel:114")
+                data = Uri.parse("tel:01066930480")
             }
             //주석 없애면 handler로 시간초 설정할 수 있어
-//            Handler(Looper.getMainLooper()).postDelayed({
-//        }//, 15000)
-            requestPermission {
-                startActivity(intent) }}
+//            Handler(Looper.getMainLooper()).postDelayed({requestPermission {startActivity(intent)}}, 15000)
+            //위 코드는 delay 사용 아래는 미사용 둘 중 하나만 선택
+//            requestPermission {startActivity(intent)}
+            startActivity(intent)
+            sensorFlag = 1
+        }
 
         builder.setNeutralButton("닫기"){
                 dialog,p1->   dialog.cancel()
+            sensorFlag = 1
         }
 
         builder.setNegativeButton("문자"){
                 dialog,p1->
-//            val intent2 = Intent(Intent(Intent.ACTION_SENDTO).apply
-//            { data=Uri.parse("smsto:029706468") })
-//            intent2.putExtra("sms_body", "신고합니다. 살려주세요.")
-//            requestPermission {
-//                startActivity(intent2) }
-
-//            val smsManager:SmsManager
-//            val policenumber = "010252924"
-//            val msg = "안녕하세요"
-//            if (Build.VERSION.SDK_INT>=23) {
-//                //if SDK is greater that or equal to 23 then
-//                //this is how we will initialize the SmsManager
-//                smsManager = this.getSystemService(SmsManager::class.java)
-//            }
-//            else{
-//                //if user's SDK is less than 23 then
-//                //SmsManager will be initialized like this
-//                smsManager = SmsManager.getDefault()
-//            }
-//
-//            // on below line we are sending text message.
-//            requestPermission {
-//                smsManager.sendTextMessage(policenumber, null, msg, null, null)
-//            }
-
-//            val sms =   applicationContext.getSystemService(SmsManager::class.java)
-
-//            sms.sendTextMessage(policenumber.toString(),null,msg,null,null)
+            sensorFlag = 1
         }
         val alertDialog: AlertDialog = builder.create()
 
         //다이얼로그를 한번만 보이는건 실패함
         alertDialog.show()
-//여기에 넣으면 안눌러도 15초후에 실행됨
-//        Handler(Looper.getMainLooper()).postDelayed({
-//        }, 15000)
-
-//    if(!alertDialog.isShowing){
-//
-//        alertDialog.show()
-//    }else alertDialog.dismiss()
-
     }
 
     //permission이 있는지 확인
@@ -244,12 +231,13 @@ class MainActivity : AppCompatActivity() {
                 }
                 override fun onPermissionDenied(deniedPermissions: List<String>) {
                     Toast.makeText( this@MainActivity,
-                        "권한을 허가해주세요.",
+                        "권한을 허용하지 않을 시 특정 기능 사용에 제한이 있을 수 있습니다.",
                         Toast.LENGTH_SHORT).show()
                 }
             })
             .setDeniedMessage("권한을 허용해주세요. [설정] > [앱 및 알림] > [고급] > [앱 권한]")
-            .setPermissions(Manifest.permission.CALL_PHONE,Manifest.permission.SEND_SMS)
+            .setPermissions(Manifest.permission.CALL_PHONE,Manifest.permission.SEND_SMS
+                ,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)
             .check()
     }
 
@@ -260,11 +248,11 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    data class CCTVLocation(val num:String, val address:String,
-                            val cameraNum:String, val latitude:String, val longitude:String)
+//    data class CCTVLocation(val num:String, val address:String,
+//                            val cameraNum:String, val latitude:String, val longitude:String)
 
-    private fun readExcelFileFromAssets(): MutableList<CCTVLocation> {
-        var itemList: MutableList<CCTVLocation> = mutableListOf();
+    private fun readExcelFileFromAssets(): Unit {
+        var itemList: MutableList<CCTV> = mutableListOf();
         try {
             val myInput: InputStream
             // assetManager 초기 설정
@@ -281,8 +269,6 @@ class MainActivity : AppCompatActivity() {
             val rowIter = sheet.rowIterator()
             //행 넘버 변수 만들기
             var rowno = 0
-            // MutableList 생성
-            var items: MutableList<CCTVLocation> = mutableListOf()
 
             while (rowIter.hasNext()) {
                 val myRow = rowIter.next() as HSSFRow
@@ -291,16 +277,14 @@ class MainActivity : AppCompatActivity() {
                     val cellIter = myRow.cellIterator()
                     //열 넘버 변수 만들기
                     var colno = 0
-                    var num = ""
                     var address = ""
                     var cameraNum = ""
                     var latitude = ""
-                    var longitude =""
+                    var longitude = ""
                     //열 반복문
                     while (cellIter.hasNext()) {
                         val myCell = cellIter.next() as HSSFCell
                         when{
-                            colno === 0 -> num = myCell.toString()
                             colno === 1 -> address = myCell.toString()
                             colno === 2 -> cameraNum = myCell.toString()
                             colno === 3 -> latitude = myCell.toString()
@@ -308,17 +292,16 @@ class MainActivity : AppCompatActivity() {
                         }
                         colno++
                     }
-                    //열을 Mutablelist에 추가
-                    items.add(CCTVLocation(num,address,cameraNum,latitude,longitude))
+                    // CCTV data class양식에 맞는 Entity 생성
+                    val item = CCTV(rowno,address,cameraNum,latitude,longitude)
+                    // Entity를 cctvDB에 삽입
+                    cctvDB.cctvDAO().insert(item)
                 }
                 rowno++
             }
-            Log.e("checking", " items: " + items)
-            itemList = items
         }
         catch (e: Exception) {
             Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
         }
-        return itemList
     }
 }
