@@ -66,7 +66,7 @@ class FragmentThree : Fragment() {
         }
             activity?.let{
                 val intent = Intent(Intent.ACTION_CALL).apply{
-                    data = Uri.parse("tel:010772529")
+                    data = Uri.parse("tel:114")
 
                 }
                 startActivity(intent)

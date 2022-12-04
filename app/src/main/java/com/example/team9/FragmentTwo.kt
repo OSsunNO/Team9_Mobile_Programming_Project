@@ -42,11 +42,8 @@ class FragmentTwo : Fragment() {
 
         // 버튼 초기화
         playButton = requireView().findViewById(R.id.playbutton)
-        pauseButton = requireView().findViewById(R.id.pausebutton)
-
 //        mediaPlayer = MediaPlayer.create(this, R.raw.police11)
 //        mediaPlayer?.start()
-
 
         //오류 나는부분
         playButton.setOnClickListener {
@@ -55,10 +52,6 @@ class FragmentTwo : Fragment() {
             mediaPlayer = MediaPlayer.create(requireContext(), R.raw.police11)
             mediaPlayer?.start()
         }
-        pauseButton.setOnClickListener {
-            mediaPlayer?.pause()
-        }
-
 
     }
 

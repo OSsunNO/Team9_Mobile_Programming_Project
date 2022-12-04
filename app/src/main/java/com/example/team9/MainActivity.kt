@@ -1,6 +1,7 @@
 package com.example.team9
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -18,6 +19,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -50,9 +52,11 @@ class MainActivity : AppCompatActivity() {
     private var currentAcceleration = 0f
     private var lastAcceleration = 0f
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        requestPermission{}
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
@@ -172,34 +176,7 @@ class MainActivity : AppCompatActivity() {
 
         builder.setNegativeButton("문자"){
                 dialog,p1->
-//            val intent2 = Intent(Intent(Intent.ACTION_SENDTO).apply
-//            { data=Uri.parse("smsto:029706468") })
-//            intent2.putExtra("sms_body", "신고합니다. 살려주세요.")
-//            requestPermission {
-//                startActivity(intent2) }
 
-//            val smsManager:SmsManager
-//            val policenumber = "010252924"
-//            val msg = "안녕하세요"
-//            if (Build.VERSION.SDK_INT>=23) {
-//                //if SDK is greater that or equal to 23 then
-//                //this is how we will initialize the SmsManager
-//                smsManager = this.getSystemService(SmsManager::class.java)
-//            }
-//            else{
-//                //if user's SDK is less than 23 then
-//                //SmsManager will be initialized like this
-//                smsManager = SmsManager.getDefault()
-//            }
-//
-//            // on below line we are sending text message.
-//            requestPermission {
-//                smsManager.sendTextMessage(policenumber, null, msg, null, null)
-//            }
-
-//            val sms =   applicationContext.getSystemService(SmsManager::class.java)
-
-//            sms.sendTextMessage(policenumber.toString(),null,msg,null,null)
         }
         val alertDialog: AlertDialog = builder.create()
 
@@ -230,7 +207,7 @@ class MainActivity : AppCompatActivity() {
                 }
             })
             .setDeniedMessage("권한을 허용해주세요. [설정] > [앱 및 알림] > [고급] > [앱 권한]")
-            .setPermissions(Manifest.permission.CALL_PHONE,Manifest.permission.SEND_SMS)
+            .setPermissions(Manifest.permission.CALL_PHONE,Manifest.permission.SEND_SMS,Manifest.permission.READ_EXTERNAL_STORAGE)
             .check()
     }
 
