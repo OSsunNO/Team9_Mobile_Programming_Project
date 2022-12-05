@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -23,8 +24,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.FragmentManager
 import com.example.team9.databinding.ActivityMainBinding
 import com.example.team9.databinding.FragmentOneBinding
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.protobuf.MapFieldLite
+import kotlinx.android.synthetic.main.fragment_one.view.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -53,10 +54,13 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     private var param2: String? = null
 
     private lateinit var mMap: MapView
-    val cctvDB: CCTVDB by lazy { CCTVDB.getInstance(requireContext()) } // initiating the database
-    lateinit var location: String
-    lateinit var gpsButton: ImageButton
+    lateinit var mainActivity: MainActivity
     lateinit var permLauncher: ActivityResultLauncher<String>
+    lateinit var locationStr: String
+    var lat = 0.0
+    var long = 0.0
+    val cctvDB: CCTVDB by lazy { CCTVDB.getInstance(requireContext()) } // initiating the database
+    lateinit var gpsButton: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +70,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
             param2 = it.getString(ARG_PARAM2)
         }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,7 +83,6 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         mMap.getMapAsync(this)
 
         gpsButton = rootView.findViewById(R.id.GPSbutton)
-
         permLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
@@ -90,8 +94,6 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                     Log.d("ITM", "permission request denied. next time, we need to explain WHY.")
                 }
             }
-        gpsButton.setOnClickListener() {
-        }
 
         return rootView
     }
@@ -112,7 +114,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     }
 
     // 내가 사용할 수 있는 Map이 GoogleMap 파라미터를 통해 전달
-    @SuppressLint("SuspiciousIndentation")
+    @SuppressLint("SuspiciousIndentation","MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
 
         // 파이어 스토어에서 intances get
@@ -123,7 +125,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         // 경도/위도 기반 위치 저장
         val place = LatLng(37.57797241, 127.0930099)
 //        CameraPosition.builder().target(place).zoom(100.0f).build()
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 20f))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 17f))
         // 구글맵에 띄울 마커 roomDB ver
         for (i in 1..100) {
             val marker = MarkerOptions().position(
@@ -133,6 +135,61 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                 )
             ).title(cctvData[i].address)
             googleMap.addMarker(marker)
+        }
+
+        gpsButton.setOnClickListener {
+            when {
+                ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                    val locationManager = mainActivity.getSystemService(LOCATION_SERVICE) as LocationManager
+                    var location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                    lat = location!!.latitude
+                    long = location.longitude
+                    locationStr = location.toString()
+                    Toast.makeText(mainActivity, locationStr, Toast.LENGTH_LONG).show()
+
+                    var place1 = LatLng(lat, long)
+//        CameraPosition.builder().target(place).zoom(100.0f).build()
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place1, 17f))
+
+                    Log.d("abc", "$lat, $long")
+                }
+                // first attempt일 때는 false 두 번째 시도부터 true
+                shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION") -> {
+                    Log.d("ITM", "without this? you cannot use our app :D")
+                }
+                else -> {
+                    Log.d("ITM", "request permission")
+                    permLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                }
+            }
+            when {
+                ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                    val locationManager = mainActivity.getSystemService(LOCATION_SERVICE) as LocationManager
+                    var location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                    lat = location!!.latitude
+                    long = location.longitude
+                    locationStr = location.toString()
+                    Toast.makeText(mainActivity, locationStr, Toast.LENGTH_LONG).show()
+
+                    val place2 = LatLng(lat, long)
+//        CameraPosition.builder().target(place).zoom(100.0f).build()
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place2, 17f))
+
+                    Log.d("abc", "$lat, $long")
+                    /*Log.d(
+                        "ITM",
+                        "${locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)}"
+                    )*/
+                }
+                // first attempt일 때는 false 두 번째 시도부터 true
+                shouldShowRequestPermissionRationale("android.permission.ACCESS_COARSE_LOCATION") -> {
+                    Log.d("ITM", "without this? you cannot use our app :D")
+                }
+                else -> {
+                    Log.d("ITM", "request permission")
+                    permLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+                }
+            }
         }
         // 구글맵에 띄울 마커 파이어스토어 ver
         /*for (i in 1..46163) {
@@ -149,6 +206,12 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                     googleMap.addMarker(marker)
                 }
         }*/
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Context를 액티비티로 형변환해서 할당
+        mainActivity = context as MainActivity
     }
 
     override fun onStart() {
@@ -182,13 +245,5 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     }
 }
 
-//    private fun getLastLocation() {
-//(LocationManager)activity.getSystemService(LOCATION_SERVICE)
-//        val locationManager = MainActivity.getSystemService(LOCATION_SERVICE) as LocationManager
-//        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).toString()
-//        if (location != null) {
-//            homeViewModel.setMyLocation(location.latitude, location.longitude)
-//        }
-//    }
 
-//}
+

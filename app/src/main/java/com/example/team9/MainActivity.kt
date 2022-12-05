@@ -3,8 +3,6 @@ package com.example.team9
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Dialog
-import android.app.Instrumentation.ActivityResult
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -16,7 +14,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
 import android.widget.ToggleButton
@@ -24,6 +21,11 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.maps.MapView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
@@ -49,6 +51,7 @@ class MainActivity : AppCompatActivity() {
 
     val cctvDB: CCTVDB by lazy {CCTVDB.getInstance(this)}
 
+
     private lateinit var SensorSwitch: ToggleButton
     private var sensorManager: SensorManager? = null
     private var acceleration = 0f
@@ -62,21 +65,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        try {
-//            //val fragment : Fragment클래스 = supportFragmentManager.findFragmentById(R.id.프래그먼트컨테이너) as Fragment클래스
-//            val fragment : FragmentFour = supportFragmentManager.findFragmentById(R.layout.fragment_four) as FragmentFour
-//            SensorSwitch = fragment.requireView().findViewById(R.id.toggleButton)
-//            SensorSwitch.setOnCheckedChangeListener { _, isChecked ->
-//                if (isChecked) {
-//                    sensorFlag = 1
-//                } else {
-//                    sensorFlag = 0
-//                }
-//            }
-//        }
-//        catch(e: Exception) {
-//            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
-//        }
+
+       /* try {
+            //val fragment : Fragment클래스 = supportFragmentManager.findFragmentById(R.id.프래그먼트컨테이너) as Fragment클래스
+
+            val fm = supportFragmentManager
+//            fm.executePendingTransactions()
+            val fragment : FragmentFour = fm.findFragmentById(R.layout.fragment_four) as FragmentFour
+            SensorSwitch = fragment.requireView().findViewById(R.id.toggleButton)
+            SensorSwitch.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    sensorFlag = 1
+                } else {
+                    sensorFlag = 0
+                }
+            }
+        }
+        catch(e: Exception) {
+            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
+        }*/
 
         requestPermission{}
 
@@ -237,7 +244,7 @@ class MainActivity : AppCompatActivity() {
             })
             .setDeniedMessage("권한을 허용해주세요. [설정] > [앱 및 알림] > [고급] > [앱 권한]")
             .setPermissions(Manifest.permission.CALL_PHONE,Manifest.permission.SEND_SMS
-                ,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)
+                ,Manifest.permission.READ_EXTERNAL_STORAGE)
             .check()
     }
 
