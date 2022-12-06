@@ -19,6 +19,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.Toast
+import android.widget.ToggleButton
 import android.widget.Toolbar
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -29,6 +30,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
+import com.gun0912.tedpermission.provider.TedPermissionProvider.context
 import org.apache.poi.hssf.usermodel.HSSFCell
 import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -52,11 +54,14 @@ class MainActivity : AppCompatActivity() {
     private var currentAcceleration = 0f
     private var lastAcceleration = 0f
 
+    private var sensorFlag =1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         requestPermission{}
+
+
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
@@ -121,10 +126,10 @@ class MainActivity : AppCompatActivity() {
 
             // Display a Toast message if
             // acceleration value is over 12
-            if (acceleration > 12) {
+            if (acceleration > 12&&sensorFlag==1) {
 //                Toast.makeText(applicationContext, "Shake event detected", Toast.LENGTH_SHORT).show()
                 //다이얼로그를 보여준다
-
+                sensorFlag=0
                 showDialog()
 
             }
@@ -162,20 +167,22 @@ class MainActivity : AppCompatActivity() {
                 p0, p1-> val intentgo = Intent(this,textActivity::class.java)
             startActivity(intentgo)
             val intent = Intent(Intent.ACTION_CALL).apply{
-            data = Uri.parse("tel:114")
-        }
+                data = Uri.parse("tel:114")
+            }
             //주석 없애면 handler로 시간초 설정할 수 있어
 //            Handler(Looper.getMainLooper()).postDelayed({
 //        }//, 15000)
             requestPermission {
-                startActivity(intent) }}
+                startActivity(intent) }
+            sensorFlag=1}
 
         builder.setNeutralButton("닫기"){
                 dialog,p1->   dialog.cancel()
+            sensorFlag=1
         }
 
         builder.setNegativeButton("문자"){
-                dialog,p1->
+                dialog,p1->sensorFlag=1
 
         }
         val alertDialog: AlertDialog = builder.create()
@@ -201,7 +208,7 @@ class MainActivity : AppCompatActivity() {
                     logic()
                 }
                 override fun onPermissionDenied(deniedPermissions: List<String>) {
-                    Toast.makeText( this@MainActivity,
+                    Toast.makeText( context,
                         "권한을 허가해주세요.",
                         Toast.LENGTH_SHORT).show()
                 }
