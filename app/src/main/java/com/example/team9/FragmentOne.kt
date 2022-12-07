@@ -9,12 +9,9 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.location.Address
 import android.location.Geocoder
-import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,25 +19,17 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.FragmentManager
-import com.example.team9.databinding.ActivityMainBinding
-import com.example.team9.databinding.FragmentOneBinding
+import androidx.fragment.app.Fragment
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.protobuf.MapFieldLite
 import kotlinx.android.synthetic.main.fragment_one.view.*
 import java.io.IOException
 import java.util.*
+import javax.annotation.Nullable
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -64,7 +53,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     lateinit var locationStr: String
     var lat = 0.0
     var long = 0.0
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    lateinit var currentMarker: Marker
     val cctvDB: CCTVDB by lazy { CCTVDB.getInstance(requireContext()) } // initiating the database
 //    private val mapIcon by lazy {
 //        val drawable =
@@ -219,9 +208,9 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
 //        CameraPosition.builder().target(place).zoom(100.0f).build()
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 17f))
         // 현재위치에 띄울 마커
-        val currentMarker = MarkerOptions().position(place).title(getCurrentAddress(place))
-        Log.d("ITM","${getCurrentAddress(place)}")
-        googleMap.addMarker(currentMarker)
+        val markerOptions = MarkerOptions().position(place).title(getCurrentAddress(place))
+//        Log.d("ITM","${getCurrentAddress(place)}")
+        currentMarker = googleMap.addMarker(markerOptions)!!
         // 구글맵에 띄울 마커 roomDB ver
         for (i in 1..100) {
             val marker = MarkerOptions().position(
@@ -233,11 +222,14 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
 
             googleMap.addMarker(marker)
         }
-
+//37.6306661, 127.0814362
         gpsButton.setOnClickListener {
             getLocationWithCoarse()
             getLocationWithFine()
             val place1 = LatLng(lat, long)
+            val markerOptions1 = MarkerOptions().position(place1).title(getCurrentAddress(place1))
+            currentMarker.remove()
+            currentMarker = googleMap.addMarker(markerOptions1)!!
 //        CameraPosition.builder().target(place).zoom(100.0f).build()
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place1, 17f))
         }
