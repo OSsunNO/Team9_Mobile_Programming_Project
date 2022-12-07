@@ -205,23 +205,32 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         // 경도/위도 기반 위치 저장
         getLocationWithFine()
         val place = LatLng(lat, long)
-//        CameraPosition.builder().target(place).zoom(100.0f).build()
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 17f))
         // 현재위치에 띄울 마커
         val markerOptions = MarkerOptions().position(place).title(getCurrentAddress(place))
-//        Log.d("ITM","${getCurrentAddress(place)}")
         currentMarker = googleMap.addMarker(markerOptions)!!
         // 구글맵에 띄울 마커 roomDB ver
         for (i in 1..100) {
             val marker = MarkerOptions().position(
                 LatLng(
-                    cctvData[i].latitude.toDouble(),
-                    cctvData[i].longitude.toDouble()
+                    cctvData[i].latitude,
+                    cctvData[i].longitude
                 )
             ).title(cctvData[i].address).icon(BitmapDescriptorFactory.fromBitmap(mapIcon))
 
             googleMap.addMarker(marker)
         }
+//        val aroundCCTV = cctvDB.cctvDAO().getAroundCCTV(lat, long)
+//        for (i in 0..aroundCCTV.size) {
+//            val marker = MarkerOptions().position(
+//                LatLng(
+//                    aroundCCTV[i].latitude,
+//                    aroundCCTV[i].longitude
+//                )
+//            ).title(aroundCCTV[i].address).icon(BitmapDescriptorFactory.fromBitmap(mapIcon))
+//
+//            googleMap.addMarker(marker)
+//        }
 //37.6306661, 127.0814362
         gpsButton.setOnClickListener {
             getLocationWithCoarse()

@@ -7,8 +7,8 @@ data class CCTV (
     @PrimaryKey(autoGenerate = true) var id: Int,
     var address: String,
     var cameraNum: String,
-    var latitude: String,
-    var longitude: String,
+    var latitude: Double,
+    var longitude: Double,
 )
 
 

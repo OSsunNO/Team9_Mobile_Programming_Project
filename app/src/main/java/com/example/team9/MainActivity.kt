@@ -304,16 +304,16 @@ class MainActivity : AppCompatActivity() {
                     var colno = 0
                     var address = ""
                     var cameraNum = ""
-                    var latitude = ""
-                    var longitude = ""
+                    var latitude = 0.0
+                    var longitude = 0.0
                     //열 반복문
                     while (cellIter.hasNext()) {
                         val myCell = cellIter.next() as HSSFCell
                         when{
                             colno === 1 -> address = myCell.toString()
                             colno === 2 -> cameraNum = myCell.toString()
-                            colno === 3 -> latitude = myCell.toString()
-                            colno === 4 -> longitude = myCell.toString()
+                            colno === 3 -> latitude = myCell.toString().toDouble()
+                            colno === 4 -> longitude = myCell.toString().toDouble()
                         }
                         colno++
                     }

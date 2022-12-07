@@ -16,6 +16,7 @@ interface CCTVDAO {
     // SQL query for getting all instances in the room database
     @Query("SELECT * FROM CCTV")
     fun getAll(): MutableList<CCTV>
-//    @Query("SELECT * FROM CCTV WHERE latitude ")
-//    fun
+//    @Query("SELECT * FROM CCTV WHERE latitude BETWEEN :lati - 0.00090100236513120846942223223335961 AND :lati + 0.00090100236513120846942223223335961 " +
+//            " AND longitude BETWEEN :longi - 0.00113194519121384142579816285295 AND :longi + 0.00113194519121384142579816285295")
+//    fun getAroundCCTV(lati: Double, longi: Double)
 }
