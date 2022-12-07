@@ -12,6 +12,8 @@ import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
@@ -199,18 +201,31 @@ class MainActivity : AppCompatActivity() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle("신고하시겠습니까?")
 
+        val intent = Intent(Intent.ACTION_CALL).apply{
+            data = Uri.parse("tel:01066930480")
+        }
+        val intentgo = Intent(this,textActivity::class.java)
+
+        val handler = Handler(Looper.getMainLooper())
+
+        val handlerTask = object : Runnable {
+            override fun run() {
+                startActivity(intentgo)
+                startActivity(intent)
+            }
+        }
+
+        handler.postDelayed(handlerTask,15000)
+
+
         val inflater: LayoutInflater = layoutInflater
         builder.setView(inflater.inflate(R.layout.dialog_sensor,null))
 
         //주석 없애면 handler로 시간초 설정할 수 있어
         builder.setPositiveButton("신고"){
-                p0, p1-> val intentgo = Intent(this,textActivity::class.java)
+                p0, p1->
             startActivity(intentgo)
-            val intent = Intent(Intent.ACTION_CALL).apply{
-                data = Uri.parse("tel:01066930480")
-            }
             //주석 없애면 handler로 시간초 설정할 수 있어
-//            Handler(Looper.getMainLooper()).postDelayed({requestPermission {startActivity(intent)}}, 15000)
             //위 코드는 delay 사용 아래는 미사용 둘 중 하나만 선택
 //            requestPermission {startActivity(intent)}
             startActivity(intent)
@@ -219,6 +234,7 @@ class MainActivity : AppCompatActivity() {
 
         builder.setNeutralButton("닫기"){
                 dialog,p1->   dialog.cancel()
+            handler.removeCallbacks(handlerTask)
             sensorFlag = 1
         }
 
@@ -227,9 +243,8 @@ class MainActivity : AppCompatActivity() {
             sensorFlag = 1
         }
         val alertDialog: AlertDialog = builder.create()
-
-        //다이얼로그를 한번만 보이는건 실패함
         alertDialog.show()
+
     }
 
     //permission이 있는지 확인

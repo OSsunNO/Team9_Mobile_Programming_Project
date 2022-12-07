@@ -86,7 +86,6 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         }
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -180,6 +179,31 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         }
     }
 
+    fun getCurrentAddress(latlng: LatLng): String {
+        // 위치 정보와 지역으로부터 주소 문자열을 구한다.
+        var addressList: List<Address>? = null
+        val geocoder =
+            Geocoder(mainActivity, Locale.getDefault())
+
+        // 지오코더를 이용하여 주소 리스트를 구한다.
+        addressList =
+            try {
+                geocoder.getFromLocation(latlng.latitude, latlng.longitude, 1)
+            } catch (e: IOException) {
+                Toast.makeText(
+                    mainActivity,
+                    "위치로부터 주소를 인식할 수 없습니다. 네트워크가 연결되어 있는지 확인해 주세요.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                e.printStackTrace()
+                return "주소 인식 불가"
+            }
+        if (addressList!!.size < 1) { // 주소 리스트가 비어있는지 비어 있으면
+            return "해당 위치에 주소 없음"
+        }
+        return addressList[0].getAddressLine(0).toString()
+    }
+
     // 내가 사용할 수 있는 Map이 GoogleMap 파라미터를 통해 전달
     @SuppressLint("SuspiciousIndentation","MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
@@ -194,6 +218,10 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         val place = LatLng(lat, long)
 //        CameraPosition.builder().target(place).zoom(100.0f).build()
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 17f))
+        // 현재위치에 띄울 마커
+        val currentMarker = MarkerOptions().position(place).title(getCurrentAddress(place))
+        Log.d("ITM","${getCurrentAddress(place)}")
+        googleMap.addMarker(currentMarker)
         // 구글맵에 띄울 마커 roomDB ver
         for (i in 1..100) {
             val marker = MarkerOptions().position(
@@ -207,8 +235,8 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         }
 
         gpsButton.setOnClickListener {
-            getLocationWithFine()
             getLocationWithCoarse()
+            getLocationWithFine()
             val place1 = LatLng(lat, long)
 //        CameraPosition.builder().target(place).zoom(100.0f).build()
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place1, 17f))
@@ -228,30 +256,6 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                     googleMap.addMarker(marker)
                 }
         }*/
-    }
-
-    fun getCurrentAddress(latlng: LatLng): String {
-        // 위치 정보와 지역으로부터 주소 문자열을 구한다.
-        var addressList: List<Address>? = null
-        val geocoder =
-            Geocoder(mainActivity, Locale.getDefault())
-
-        // 지오코더를 이용하여 주소 리스트를 구한다.
-        addressList = try {
-            geocoder.getFromLocation(latlng.latitude, latlng.longitude, 1)
-        } catch (e: IOException) {
-            Toast.makeText(
-                mainActivity,
-                "위치로부터 주소를 인식할 수 없습니다. 네트워크가 연결되어 있는지 확인해 주세요.",
-                Toast.LENGTH_SHORT
-            ).show()
-            e.printStackTrace()
-            return "주소 인식 불가"
-        }
-        if (addressList!!.size < 1) { // 주소 리스트가 비어있는지 비어 있으면
-            return "해당 위치에 주소 없음"
-        }
-        return addressList[0].toString()
     }
 
     override fun onAttach(context: Context) {
