@@ -85,6 +85,10 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
         }*/
 
+        // load the cctv data using roomDB
+        // If the user launch the application first, he or she have to use this method for saving the cctv data into their RoomDB
+//        readExcelFileFromAssets()
+
         requestPermission{}
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -127,8 +131,7 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("ITM", "Hello")
 
-        // the mutable list which contains cctv data
-//        var excelList = readExcelFileFromAssets()
+
 
         // the code for uploading the cctv data to firestore
         /*val db = Firebase.firestore

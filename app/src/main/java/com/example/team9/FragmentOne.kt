@@ -54,11 +54,12 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     private var param2: String? = null
 
     private lateinit var mMap: MapView
-    lateinit var mainActivity: MainActivity
+    lateinit var mainActivity: MainActivity // context
     lateinit var permLauncher: ActivityResultLauncher<String>
     lateinit var locationStr: String
     var lat = 0.0
     var long = 0.0
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     val cctvDB: CCTVDB by lazy { CCTVDB.getInstance(requireContext()) } // initiating the database
     lateinit var gpsButton: ImageButton
 
@@ -123,7 +124,29 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         // room DB에서 instances get
         val cctvData = cctvDB.cctvDAO().getAll()
         // 경도/위도 기반 위치 저장
-        val place = LatLng(37.57797241, 127.0930099)
+        when {
+            ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                val locationManager = mainActivity.getSystemService(LOCATION_SERVICE) as LocationManager
+//                var location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                lat = location!!.latitude//location!!.latitude
+                long = location.longitude//location.longitude
+                locationStr = location.toString()
+                Toast.makeText(mainActivity, locationStr, Toast.LENGTH_LONG).show()
+//        CameraPosition.builder().target(place).zoom(100.0f).build()
+                Log.d("abc", "$lat, $long")
+            }
+            // first attempt일 때는 false 두 번째 시도부터 true
+            shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION") -> {
+                Log.d("ITM", "without this? you cannot use our app :D")
+            }
+            else -> {
+                Log.d("ITM", "request permission")
+                permLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+
+        val place = LatLng(lat, long)
 //        CameraPosition.builder().target(place).zoom(100.0f).build()
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 17f))
         // 구글맵에 띄울 마커 roomDB ver
@@ -141,7 +164,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
             when {
                 ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
                     val locationManager = mainActivity.getSystemService(LOCATION_SERVICE) as LocationManager
-                    var location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                    val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
                     lat = location!!.latitude
                     long = location.longitude
                     locationStr = location.toString()
@@ -165,7 +188,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
             when {
                 ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
                     val locationManager = mainActivity.getSystemService(LOCATION_SERVICE) as LocationManager
-                    var location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                    val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
                     lat = location!!.latitude
                     long = location.longitude
                     locationStr = location.toString()

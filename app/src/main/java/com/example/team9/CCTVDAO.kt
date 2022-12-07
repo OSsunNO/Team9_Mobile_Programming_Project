@@ -16,4 +16,6 @@ interface CCTVDAO {
     // SQL query for getting all instances in the room database
     @Query("SELECT * FROM CCTV")
     fun getAll(): MutableList<CCTV>
+//    @Query("SELECT * FROM CCTV WHERE latitude ")
+//    fun
 }
