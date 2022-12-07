@@ -61,8 +61,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         requestPermission{}
 
-
-
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         Objects.requireNonNull(sensorManager)!!
@@ -160,7 +158,7 @@ class MainActivity : AppCompatActivity() {
         builder.setView(inflater.inflate(R.layout.dialog_sensor,null))
 
 
-        //주석 없애면 handler로 시간초 설정할 수 있어
+
         builder.setPositiveButton("신고"){
 
 
@@ -170,10 +168,9 @@ class MainActivity : AppCompatActivity() {
                 data = Uri.parse("tel:114")
             }
             //주석 없애면 handler로 시간초 설정할 수 있어
-//            Handler(Looper.getMainLooper()).postDelayed({
-//        }//, 15000)
-            requestPermission {
-                startActivity(intent) }
+
+
+                startActivity(intent)
             sensorFlag=1}
 
         builder.setNeutralButton("닫기"){
@@ -286,5 +283,6 @@ class MainActivity : AppCompatActivity() {
         }
         return itemList
     }
+
 }
 

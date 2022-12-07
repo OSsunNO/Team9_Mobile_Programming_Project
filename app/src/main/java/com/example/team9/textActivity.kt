@@ -6,26 +6,31 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.telephony.SmsManager
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 
 class textActivity : AppCompatActivity() {
-
+    private var storageReference = Firebase.storage
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_text)
-
+        val myemail = FirebaseAuth.getInstance().currentUser!!.email.toString()
         val db = Firebase.firestore
-        val mydata = db.collection("nyk395@gmail.com").document("nyk395@gmail.com")
+        val mydata = db.collection("$myemail").document("$myemail")
+
         mydata.addSnapshotListener { value, error ->
+
             if (value!=null&&value.exists()){
                 val a =value.data!!["name"].toString()
                 val b =value.data!!["age"].toString()
                 val c =value.data!!["gender"].toString()
+
                 val msg = "이름:$a+$b+세+성별:$c"
                 val smsManager: SmsManager
                 val policenumber = "114"
@@ -40,19 +45,12 @@ class textActivity : AppCompatActivity() {
                     //SmsManager will be initialized like this
                     smsManager = SmsManager.getDefault()
                 }
-
                 // on below line we are sending text message.
-
                 smsManager.sendTextMessage(policenumber, null, msg, null, null)
-
-            }
+            }}
             val intentgomain = Intent(this,MainActivity::class.java)
             startActivity(intentgomain)
             finish()
         }
-        //mydata.addSnapshotListener(EventListener<DocumentSnapshot>){snapshot,e->if(snapshot!=null &&snapshot)}
-
-
-    }
 
 }
