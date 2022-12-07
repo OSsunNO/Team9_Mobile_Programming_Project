@@ -15,7 +15,7 @@ class textActivity : AppCompatActivity() {
         setContentView(R.layout.activity_text)
 
         val smsManager: SmsManager
-        val policenumber = "114"
+        val policenumber = "01066930480"
         val msg = "안녕하세요"
         if (Build.VERSION.SDK_INT>=23) {
             //if SDK is greater that or equal to 23 then

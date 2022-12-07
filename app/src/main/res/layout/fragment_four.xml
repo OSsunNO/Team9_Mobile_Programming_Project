@@ -50,4 +50,12 @@
         app:layout_constraintHorizontal_bias="0.205"
         app:layout_constraintStart_toEndOf="@+id/myimage"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ToggleButton"
+        tools:layout_editor_absoluteX="71dp"
+        tools:layout_editor_absoluteY="572dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
