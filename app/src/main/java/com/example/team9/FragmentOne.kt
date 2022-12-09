@@ -72,7 +72,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     }
 
     private val myIcon by lazy{
-        val drawble2 = ResourcesCompat.getDrawable(resources, R.drawable.user, null) as BitmapDrawable
+        val drawble2 = ResourcesCompat.getDrawable(resources, R.drawable.user1, null) as BitmapDrawable
         Bitmap.createScaledBitmap(drawble2.bitmap, 144, 144, false)
     }
     lateinit var gpsButton: ImageButton

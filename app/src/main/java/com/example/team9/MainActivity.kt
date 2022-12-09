@@ -1,6 +1,5 @@
 package com.example.team9
 
-
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -15,14 +14,18 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.telephony.SmsManager
+import android.telephony.SmsMessage
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.Toast
 import android.widget.ToggleButton
+import android.widget.Toolbar
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -30,8 +33,10 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.maps.MapView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.firestore.FirebaseFirestore
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
+import com.gun0912.tedpermission.provider.TedPermissionProvider.context
 import kotlinx.android.synthetic.main.fragment_four.*
 import org.apache.poi.hssf.usermodel.HSSFCell
 import org.apache.poi.hssf.usermodel.HSSFRow
@@ -40,7 +45,6 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem
 import java.io.InputStream
 import java.lang.Math.sqrt
 import java.util.*
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -85,31 +89,31 @@ class MainActivity : AppCompatActivity() {
         }
 //        supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
         requestPermission{}
-       /* try {
-            //val fragment : Fragment클래스 = supportFragmentManager.findFragmentById(R.id.프래그먼트컨테이너) as Fragment클래스
+        /* try {
+             //val fragment : Fragment클래스 = supportFragmentManager.findFragmentById(R.id.프래그먼트컨테이너) as Fragment클래스
 
-            val fm = supportFragmentManager
-//            fm.executePendingTransactions()
-            val fragment : FragmentFour = fm.findFragmentById(R.layout.fragment_four) as FragmentFour
-            SensorSwitch = fragment.requireView().findViewById(R.id.toggleButton)
-            SensorSwitch.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    sensorFlag = 1
-                } else {
-                    sensorFlag = 0
-                }
-            }
-        }
-        catch(e: Exception) {
-            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
-        }*/
+             val fm = supportFragmentManager
+ //            fm.executePendingTransactions()
+             val fragment : FragmentFour = fm.findFragmentById(R.layout.fragment_four) as FragmentFour
+             SensorSwitch = fragment.requireView().findViewById(R.id.toggleButton)
+             SensorSwitch.setOnCheckedChangeListener { _, isChecked ->
+                 if (isChecked) {
+                     sensorFlag = 1
+                 } else {
+                     sensorFlag = 0
+                 }
+             }
+         }
+         catch(e: Exception) {
+             Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
+         }*/
 
         // load the cctv data using roomDB
         // If the user launch the application first, he or she have to use this method for saving the cctv data into their RoomDB
 //        readExcelFileFromAssets()
 
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         Objects.requireNonNull(sensorManager)!!
             .registerListener(sensorListener, sensorManager!!
@@ -118,6 +122,7 @@ class MainActivity : AppCompatActivity() {
         acceleration = 10f
         currentAcceleration = SensorManager.GRAVITY_EARTH
         lastAcceleration = SensorManager.GRAVITY_EARTH
+
 
         // 애플리케이션 실행 후 첫 화면 설정
         supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
@@ -150,6 +155,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
         // the code for uploading the cctv data to firestore
         /*val db = Firebase.firestore
 
@@ -168,7 +174,6 @@ class MainActivity : AppCompatActivity() {
                 .addOnFailureListener { e-> Log.w("firestore", "Error", e) }
         }*/
     }
-
     private val sensorListener: SensorEventListener = object : SensorEventListener {
         @RequiresApi(Build.VERSION_CODES.M)
         override fun onSensorChanged(event: SensorEvent) {
@@ -191,9 +196,6 @@ class MainActivity : AppCompatActivity() {
                 sensorFlag = 0
                 showDialog()
             }
-
-//                Toast.makeText(applicationContext, "Shake event detected", Toast.LENGTH_SHORT).show()
-                //다이얼로그를 보여준다
         }
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
     }
@@ -208,12 +210,12 @@ class MainActivity : AppCompatActivity() {
         sensorManager!!.unregisterListener(sensorListener)
         super.onPause()
     }
-
-
     //function for showing dialog alert
     @RequiresApi(Build.VERSION_CODES.M)
     private fun showDialog(){
+
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+
         builder.setTitle("신고하시겠습니까?")
 
         val intent = Intent(Intent.ACTION_CALL).apply{
@@ -233,8 +235,10 @@ class MainActivity : AppCompatActivity() {
         handler.postDelayed(handlerTask,15000)
 
 
+
         val inflater: LayoutInflater = layoutInflater
         builder.setView(inflater.inflate(R.layout.dialog_sensor,null))
+
 
         //주석 없애면 handler로 시간초 설정할 수 있어
         builder.setPositiveButton("신고"){
@@ -246,19 +250,27 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             sensorFlag = 1
         }
+            //주석 없애면 handler로 시간초 설정할 수 있어
+
 
         builder.setNeutralButton("닫기"){
-                dialog,p1->   dialog.cancel()
+            dialog,p1->   dialog.cancel()
             handler.removeCallbacks(handlerTask)
             sensorFlag = 1
         }
 
-        builder.setNegativeButton("문자"){
-                dialog,p1->
-            sensorFlag = 1
-        }
         val alertDialog: AlertDialog = builder.create()
+
+        //다이얼로그를 한번만 보이는건 실패함
         alertDialog.show()
+//여기에 넣으면 안눌러도 15초후에 실행됨
+//        Handler(Looper.getMainLooper()).postDelayed({
+//        }, 15000)
+
+//    if(!alertDialog.isShowing){
+//
+//        alertDialog.show()
+//    }else alertDialog.dismiss()
 
     }
 
@@ -270,18 +282,17 @@ class MainActivity : AppCompatActivity() {
                     logic()
                 }
                 override fun onPermissionDenied(deniedPermissions: List<String>) {
-                    Toast.makeText( this@MainActivity,
-                        "권한을 허용하지 않을 시 특정 기능 사용에 제한이 있을 수 있습니다.",
+                    Toast.makeText( context,
+                        "권한을 허가해주세요.",
                         Toast.LENGTH_SHORT).show()
                 }
             })
             .setDeniedMessage("권한을 허용해주세요. [설정] > [앱 및 알림] > [고급] > [앱 권한]")
-            .setPermissions(Manifest.permission.CALL_PHONE,Manifest.permission.SEND_SMS
-                ,Manifest.permission.READ_EXTERNAL_STORAGE)
+            .setPermissions(Manifest.permission.CALL_PHONE,Manifest.permission.SEND_SMS,Manifest.permission.READ_EXTERNAL_STORAGE)
             .check()
     }
 
-
+    //여기서 부터 fragment코드임
     //fragment chaging function
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
@@ -345,3 +356,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
