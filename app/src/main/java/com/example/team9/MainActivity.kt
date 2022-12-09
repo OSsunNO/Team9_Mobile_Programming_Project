@@ -62,16 +62,18 @@ class MainActivity : AppCompatActivity() {
         var pref = getSharedPreferences("checkFirst", Activity.MODE_PRIVATE)
         var checkFirst = pref.getBoolean("checkFirst", true)
         if (checkFirst == true){
-            readExcelFileFromAssets()
             pref.edit().putBoolean("checkFirst",false).apply()
+            readExcelFileFromAssets()
             val handler = Handler(Looper.getMainLooper())
             val handlerTask = object : Runnable {
                 override fun run() {
                     supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
+                    requestPermission{}
                 }
             }
-            handler.postDelayed(handlerTask,3000)
+            handler.postDelayed(handlerTask,10000)
         }
+
 
         requestPermission{}
 
