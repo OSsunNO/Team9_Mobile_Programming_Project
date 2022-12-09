@@ -27,8 +27,6 @@ import com.google.firebase.storage.ktx.storage
 class FragmentFour : Fragment() {
     lateinit var mainActivity: MainActivity
     private lateinit var imageView: ImageView
-
-
     private lateinit var uri: Uri
     private lateinit var btnLogout: Button
     private lateinit var gotoedit: Button
@@ -53,7 +51,6 @@ class FragmentFour : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_four, container, false)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -96,7 +93,6 @@ class FragmentFour : Fragment() {
 
         btnLogout = requireView().findViewById(R.id.logout)
 
-
         gotoedit = requireView().findViewById(R.id.gotoedit)
 
     gotoedit.setOnClickListener {
@@ -111,11 +107,15 @@ class FragmentFour : Fragment() {
         logoutIntent.flags =
             Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(logoutIntent)
-
     }
 }
 }
 
+    override fun onPause() {
+        super.onPause()
+
+
+    }
 
 }
 

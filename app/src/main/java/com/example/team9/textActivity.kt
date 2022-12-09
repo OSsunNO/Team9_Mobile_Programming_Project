@@ -13,6 +13,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 
 class textActivity : AppCompatActivity() {
@@ -47,7 +48,8 @@ class textActivity : AppCompatActivity() {
                 }
                 // on below line we are sending text message.
                 smsManager.sendTextMessage(policenumber, null, msg, null, null)
-            }}
+            }
+        }
             val intentgomain = Intent(this,MainActivity::class.java)
             startActivity(intentgomain)
             finish()

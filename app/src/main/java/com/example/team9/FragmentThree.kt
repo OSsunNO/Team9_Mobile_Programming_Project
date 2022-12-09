@@ -21,7 +21,6 @@ class FragmentThree : Fragment() {
 
     private lateinit var emegencyButton: ImageButton
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -33,6 +32,7 @@ class FragmentThree : Fragment() {
         emegencyButton = requireView().findViewById(R.id.emergencybutton)
         emegencyButton.setOnClickListener {
             showDialog()
+
         }
     }
 
@@ -51,14 +51,10 @@ class FragmentThree : Fragment() {
 
         builder.setTitle("긴급상황")
 
-
         val inflater: LayoutInflater = layoutInflater
         builder.setView(inflater.inflate(R.layout.dialog_emergency,null))
 
-
-        //주석 없애면 handler로 시간초 설정할 수 있어
         builder.setPositiveButton("예"){
-
 
                 p0, p1-> activity?.let{
             val iT = Intent(context, textActivity::class.java)
@@ -81,20 +77,5 @@ class FragmentThree : Fragment() {
         alertDialog.getWindow()?.setGravity(Gravity.BOTTOM);
         alertDialog.show()
 
-
-    }
-    //permission이 있는지 확인
-    private fun requestPermission(logic : () -> Unit){
-        TedPermission.create()
-            .setPermissionListener(object : PermissionListener {
-                override fun onPermissionGranted() {
-                    logic()
-                }
-                override fun onPermissionDenied(deniedPermissions: List<String>) {
-                }
-            })
-            .setDeniedMessage("권한을 허용해주세요. [설정] > [앱 및 알림] > [고급] > [앱 권한]")
-            .setPermissions(Manifest.permission.CALL_PHONE, Manifest.permission.SEND_SMS)
-            .check()
     }
 }

@@ -22,9 +22,6 @@ import kotlinx.android.synthetic.main.dialog_siren.*
 class FragmentTwo : Fragment() {
 
     private lateinit var playButton: ImageButton
-    private lateinit var pauseButton: ImageButton
-
-
     private var mediaPlayer: MediaPlayer?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,12 +39,8 @@ class FragmentTwo : Fragment() {
 
         // 버튼 초기화
         playButton = requireView().findViewById(R.id.playbutton)
-//        mediaPlayer = MediaPlayer.create(this, R.raw.police11)
-//        mediaPlayer?.start()
 
-        //오류 나는부분
         playButton.setOnClickListener {
-            //여기서 sirendialog 클래스를 불러와서 그 내용을 실행
             showDialog()
             mediaPlayer = MediaPlayer.create(requireContext(), R.raw.police11)
             mediaPlayer?.start()
@@ -66,17 +59,13 @@ class FragmentTwo : Fragment() {
         val inflater: LayoutInflater = layoutInflater
         builder.setView(inflater.inflate(R.layout.dialog_siren,null))
 
-
-        //주석 없애면 handler로 시간초 설정할 수 있어
         builder.setPositiveButton("예"){
-
                 p0, p1-> mediaPlayer?.pause()
                 }
 
         val alertDialog: AlertDialog = builder.create()
         alertDialog.getWindow()?.setGravity(Gravity.BOTTOM);
         alertDialog.show()
-
 
     }
 

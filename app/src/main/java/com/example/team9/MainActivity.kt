@@ -53,7 +53,6 @@ class MainActivity : AppCompatActivity() {
     private var acceleration = 0f
     private var currentAcceleration = 0f
     private var lastAcceleration = 0f
-
     private var sensorFlag =1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         acceleration = 10f
         currentAcceleration = SensorManager.GRAVITY_EARTH
         lastAcceleration = SensorManager.GRAVITY_EARTH
-
 
         // 애플리케이션 실행 후 첫 화면 설정
         supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
@@ -100,11 +98,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         Log.d("ITM", "Hello")
-
         var excelList = readExcelFileFromAssets()
         val db = FirebaseFirestore.getInstance().collection("cctvLocation")
         Log.d("ITM", "${excelList[0]}")
-
     }
     private val sensorListener: SensorEventListener = object : SensorEventListener {
         @RequiresApi(Build.VERSION_CODES.M)
@@ -153,11 +149,8 @@ class MainActivity : AppCompatActivity() {
 
         builder.setTitle("신고하시겠습니까?")
 
-
         val inflater: LayoutInflater = layoutInflater
         builder.setView(inflater.inflate(R.layout.dialog_sensor,null))
-
-
 
         builder.setPositiveButton("신고"){
 
@@ -166,6 +159,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intentgo)
             val intent = Intent(Intent.ACTION_CALL).apply{
                 data = Uri.parse("tel:114")
+
             }
             //주석 없애면 handler로 시간초 설정할 수 있어
 
@@ -178,22 +172,12 @@ class MainActivity : AppCompatActivity() {
             sensorFlag=1
         }
 
-        builder.setNegativeButton("문자"){
-                dialog,p1->sensorFlag=1
 
-        }
         val alertDialog: AlertDialog = builder.create()
 
-        //다이얼로그를 한번만 보이는건 실패함
-        alertDialog.show()
-//여기에 넣으면 안눌러도 15초후에 실행됨
-//        Handler(Looper.getMainLooper()).postDelayed({
-//        }, 15000)
 
-//    if(!alertDialog.isShowing){
-//
-//        alertDialog.show()
-//    }else alertDialog.dismiss()
+        alertDialog.show()
+
 
     }
 
@@ -219,6 +203,7 @@ class MainActivity : AppCompatActivity() {
     //fragment chaging function
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
+
     }
 
 

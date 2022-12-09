@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
@@ -12,8 +14,10 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.core.view.View
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -25,7 +29,6 @@ import org.w3c.dom.Text
 
 class editActivity : AppCompatActivity() {
 
-
     private lateinit var editbutton: Button
     private lateinit var completebutton: Button
     private lateinit var editGallery: Button
@@ -33,6 +36,7 @@ class editActivity : AppCompatActivity() {
     private lateinit var uploadImage: ImageView
     private lateinit var uri: Uri
     private var storageReference = Firebase.storage
+
     var auth: FirebaseAuth? = null
     var Firestore: FirebaseFirestore? = null
 
@@ -52,7 +56,8 @@ class editActivity : AppCompatActivity() {
         completebutton = findViewById(R.id.completeButton)
 
         completebutton.setOnClickListener {
-            val intentgoedit = Intent(this,MainActivity::class.java)
+
+            val intentgoedit = Intent(this,FragmentFour::class.java)
             startActivity(intentgoedit)
 
         }
@@ -61,12 +66,14 @@ class editActivity : AppCompatActivity() {
 
         editbutton.setOnClickListener {
             var userInfomation = userInfo()
+            if(editTextName.text.isNotEmpty()&&editTextAge.text.isNotEmpty()&&editTextGender.text.isNotEmpty()){
             userInfomation.name = editTextName.text.toString()
             userInfomation.age = editTextAge.text.toString()
             userInfomation.gender = editTextGender.text.toString()
             userInfomation.explanation = editExplanation.text.toString()
             Firestore?.collection("$email")?.document(auth?.currentUser!!.email.toString())?.set(userInfomation)
-            Toast.makeText( context,"회원정보가 수정되었습니다.",Toast.LENGTH_SHORT).show()
+            Toast.makeText( context,"회원정보가 수정되었습니다.",Toast.LENGTH_SHORT).show()}
+
         }
 
         val galleryImage = registerForActivityResult(
@@ -91,7 +98,7 @@ class editActivity : AppCompatActivity() {
                             val imageMap = mapOf("url" to uri.toString())
                             val databaseReference = FirebaseDatabase.getInstance().getReference("userImages")
                             databaseReference.child(uid).setValue(imageMap)
-                            Toast.makeText( context,"회원사진이 수정되었습니다..",Toast.LENGTH_SHORT).show()
+                            Toast.makeText( context,"회원사진이 수정되었습니다.",Toast.LENGTH_SHORT).show()
                         }
                 }
         }

@@ -17,11 +17,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/editButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="20dp"
+            android:background="#FFEB08"
             android:text="수정"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline2" />
@@ -56,14 +60,14 @@
             android:id="@+id/Age"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="-Age:"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/Name"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/Name"
             app:layout_constraintTop_toBottomOf="@+id/Name"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.036" />
 
         <TextView
             android:id="@+id/Gender"
@@ -85,81 +89,90 @@
 
         <EditText
             android:id="@+id/editTextName"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
+            android:layout_width="139dp"
+            android:layout_height="44dp"
             android:ems="10"
             android:hint="이름"
             android:inputType="textPersonName"
             app:layout_constraintBottom_toTopOf="@+id/guideline2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.123"
+            app:layout_constraintHorizontal_bias="0.073"
             app:layout_constraintStart_toEndOf="@+id/MyInfo"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.149" />
+            app:layout_constraintVertical_bias="0.214" />
 
         <EditText
             android:id="@+id/editTextAge"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="132dp"
+            android:layout_height="46dp"
             android:ems="10"
             android:hint="나이"
             android:inputType="textPersonName"
             app:layout_constraintBottom_toTopOf="@+id/guideline2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.398"
+            app:layout_constraintHorizontal_bias="0.337"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextName"
-            app:layout_constraintVertical_bias="0.146" />
+            app:layout_constraintVertical_bias="0.0" />
 
         <EditText
             android:id="@+id/editTextGender"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
+            android:layout_width="139dp"
+            android:layout_height="39dp"
             android:ems="10"
             android:hint="성별"
             android:inputType="textPersonName"
             app:layout_constraintBottom_toTopOf="@+id/guideline2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.398"
+            app:layout_constraintHorizontal_bias="0.349"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextAge"
-            app:layout_constraintVertical_bias="0.142" />
+            app:layout_constraintVertical_bias="0.0" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/completeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="#FFEB08"
             android:text="완료"
+            android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.939"
+            app:layout_constraintHorizontal_bias="0.927"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextGender"
-            app:layout_constraintVertical_bias="0.411" />
+            app:layout_constraintVertical_bias="0.751" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/editGallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="20dp"
+            android:background="#FFEB08"
             android:text="갤러리"
+            android:textStyle="bold"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.905"
+            app:layout_constraintHorizontal_bias="0.869"
             app:layout_constraintStart_toEndOf="@+id/editButton"
             app:layout_constraintTop_toTopOf="@+id/guideline2" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/uploadGallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="45dp"
+            android:layout_marginTop="8dp"
+            android:background="#FFEB08"
             android:text="업로드"
+            android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/completeButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.939"
+            app:layout_constraintHorizontal_bias="0.927"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editGallery" />
+            app:layout_constraintTop_toBottomOf="@+id/editGallery"
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
             android:id="@+id/uploadImage"
@@ -183,10 +196,10 @@
             android:inputType="textPersonName"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.439"
+            app:layout_constraintHorizontal_bias="0.574"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline2"
-            app:layout_constraintVertical_bias="0.895" />
+            app:layout_constraintVertical_bias="0.926" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
