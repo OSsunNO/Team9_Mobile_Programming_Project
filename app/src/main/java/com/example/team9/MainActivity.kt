@@ -169,8 +169,12 @@ class MainActivity : AppCompatActivity() {
 
         val handlerTask = object : Runnable {
             override fun run() {
+                intentgo.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intentgo)
+                finish()
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intent)
+                finish()
             }
         }
 
@@ -182,9 +186,13 @@ class MainActivity : AppCompatActivity() {
 
         builder.setPositiveButton("신고"){
                 p0, p1->
+            intentgo.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intentgo)
+            finish()
             handler.removeCallbacks(handlerTask)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
+            finish()
             sensorFlag = 1
         }
         //주석 없애면 handler로 시간초 설정할 수 있어

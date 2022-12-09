@@ -57,14 +57,18 @@ class FragmentThree : Fragment() {
         builder.setPositiveButton("예"){
 
                 p0, p1-> activity?.let{
+
             val iT = Intent(context, textActivity::class.java)
+            iT.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(iT)
-        }
+
+            }
             activity?.let{
                 val intent = Intent(Intent.ACTION_CALL).apply{
                     data = Uri.parse("tel:114")
 
                 }
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intent)
             }
 
