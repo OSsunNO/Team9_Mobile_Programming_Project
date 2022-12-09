@@ -64,8 +64,7 @@ class MainActivity : AppCompatActivity() {
     private var acceleration = 0f
     private var currentAcceleration = 0f
     private var lastAcceleration = 0f
-
-    private var sensorFlag = 1
+    private var sensorFlag =1
 
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,29 +87,31 @@ class MainActivity : AppCompatActivity() {
             handler.postDelayed(handlerTask,2000)
         }
 //        supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
+
         requestPermission{}
         /* try {
-             //val fragment : Fragment클래스 = supportFragmentManager.findFragmentById(R.id.프래그먼트컨테이너) as Fragment클래스
+     //val fragment : Fragment클래스 = supportFragmentManager.findFragmentById(R.id.프래그먼트컨테이너) as Fragment클래스
 
-             val fm = supportFragmentManager
- //            fm.executePendingTransactions()
-             val fragment : FragmentFour = fm.findFragmentById(R.layout.fragment_four) as FragmentFour
-             SensorSwitch = fragment.requireView().findViewById(R.id.toggleButton)
-             SensorSwitch.setOnCheckedChangeListener { _, isChecked ->
-                 if (isChecked) {
-                     sensorFlag = 1
-                 } else {
-                     sensorFlag = 0
-                 }
-             }
+     val fm = supportFragmentManager
+//            fm.executePendingTransactions()
+     val fragment : FragmentFour = fm.findFragmentById(R.layout.fragment_four) as FragmentFour
+     SensorSwitch = fragment.requireView().findViewById(R.id.toggleButton)
+     SensorSwitch.setOnCheckedChangeListener { _, isChecked ->
+         if (isChecked) {
+             sensorFlag = 1
+         } else {
+             sensorFlag = 0
          }
-         catch(e: Exception) {
-             Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
-         }*/
+     }
+ }
+ catch(e: Exception) {
+     Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
+ }*/
 
         // load the cctv data using roomDB
         // If the user launch the application first, he or she have to use this method for saving the cctv data into their RoomDB
 //        readExcelFileFromAssets()
+
 
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -122,7 +123,6 @@ class MainActivity : AppCompatActivity() {
         acceleration = 10f
         currentAcceleration = SensorManager.GRAVITY_EARTH
         lastAcceleration = SensorManager.GRAVITY_EARTH
-
 
         // 애플리케이션 실행 후 첫 화면 설정
         supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
@@ -235,12 +235,9 @@ class MainActivity : AppCompatActivity() {
         handler.postDelayed(handlerTask,15000)
 
 
-
         val inflater: LayoutInflater = layoutInflater
         builder.setView(inflater.inflate(R.layout.dialog_sensor,null))
 
-
-        //주석 없애면 handler로 시간초 설정할 수 있어
         builder.setPositiveButton("신고"){
                 p0, p1->
             startActivity(intentgo)
@@ -250,27 +247,21 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             sensorFlag = 1
         }
-            //주석 없애면 handler로 시간초 설정할 수 있어
+        //주석 없애면 handler로 시간초 설정할 수 있어
 
 
         builder.setNeutralButton("닫기"){
-            dialog,p1->   dialog.cancel()
+                dialog,p1->   dialog.cancel()
             handler.removeCallbacks(handlerTask)
             sensorFlag = 1
         }
 
+
         val alertDialog: AlertDialog = builder.create()
 
-        //다이얼로그를 한번만 보이는건 실패함
-        alertDialog.show()
-//여기에 넣으면 안눌러도 15초후에 실행됨
-//        Handler(Looper.getMainLooper()).postDelayed({
-//        }, 15000)
 
-//    if(!alertDialog.isShowing){
-//
-//        alertDialog.show()
-//    }else alertDialog.dismiss()
+        alertDialog.show()
+
 
     }
 
@@ -296,6 +287,7 @@ class MainActivity : AppCompatActivity() {
     //fragment chaging function
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
+
     }
 
 
@@ -328,6 +320,7 @@ class MainActivity : AppCompatActivity() {
                     val cellIter = myRow.cellIterator()
                     //열 넘버 변수 만들기
                     var colno = 0
+                    var num = ""
                     var address = ""
                     var cameraNum = ""
                     var latitude = 0.0

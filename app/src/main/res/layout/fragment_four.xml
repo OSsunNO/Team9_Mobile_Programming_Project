@@ -21,16 +21,18 @@
             android:id="@+id/logout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
             android:background="#FFEB08"
             android:text="로그아웃"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.904"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.972" />
+            app:layout_constraintTop_toBottomOf="@+id/explanationText"
+            app:layout_constraintVertical_bias="0.058" />
 
         <ImageView
             android:id="@+id/myimage"
@@ -108,13 +110,14 @@
             android:id="@+id/gotoedit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:background="#FFEB08"
-            android:text="수정"
+            android:text="프로필 수정"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.128"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline2" />
 
@@ -122,50 +125,54 @@
             android:id="@+id/NameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
+            android:layout_marginStart="16dp"
             android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/AgeText"
+            app:layout_constraintBottom_toBottomOf="@+id/Name"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.073"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/Name"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.347" />
+            app:layout_constraintTop_toTopOf="@+id/Name"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/AgeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/GenderText"
+            app:layout_constraintBottom_toBottomOf="@+id/Age"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.073"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/Age"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.831" />
+            app:layout_constraintTop_toTopOf="@+id/Age"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/GenderText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
+            android:layout_marginStart="16dp"
             android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/guideline2"
+            app:layout_constraintBottom_toBottomOf="@+id/Gender"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.073"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/Gender"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.912" />
+            app:layout_constraintTop_toTopOf="@+id/Gender"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/explanationText"
-            android:layout_width="317dp"
-            android:layout_height="213dp"
+            android:layout_width="320dp"
+            android:layout_height="254dp"
+            android:layout_marginTop="96dp"
             android:background="@drawable/edge"
             android:text="Please enter the contents"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline2" />
+            app:layout_constraintTop_toTopOf="@+id/guideline2"
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

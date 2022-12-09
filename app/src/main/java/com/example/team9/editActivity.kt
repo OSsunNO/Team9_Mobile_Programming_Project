@@ -29,8 +29,6 @@ import org.w3c.dom.Text
 
 class editActivity : AppCompatActivity() {
 
-    private lateinit var editbutton: Button
-    private lateinit var completebutton: Button
     private lateinit var editGallery: Button
     private lateinit var uploadGallery: Button
     private lateinit var uploadImage: ImageView
@@ -45,36 +43,14 @@ class editActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
         editGallery = findViewById(R.id.editGallery)
-        uploadGallery= findViewById(R.id.uploadGallery)
-        uploadImage= findViewById(R.id.uploadImage)
+        uploadGallery = findViewById(R.id.uploadGallery)
+        uploadImage = findViewById(R.id.uploadImage)
 
         storageReference = FirebaseStorage.getInstance()
         auth = FirebaseAuth.getInstance()
         Firestore = FirebaseFirestore.getInstance()
 
-
-        completebutton = findViewById(R.id.completeButton)
-
-        completebutton.setOnClickListener {
-
-            val intentgoedit = Intent(this,FragmentFour::class.java)
-            startActivity(intentgoedit)
-
-        }
         val email = auth?.currentUser!!.email
-        editbutton = findViewById(R.id.editButton)
-
-        editbutton.setOnClickListener {
-            var userInfomation = userInfo()
-            if(editTextName.text.isNotEmpty()&&editTextAge.text.isNotEmpty()&&editTextGender.text.isNotEmpty()){
-            userInfomation.name = editTextName.text.toString()
-            userInfomation.age = editTextAge.text.toString()
-            userInfomation.gender = editTextGender.text.toString()
-            userInfomation.explanation = editExplanation.text.toString()
-            Firestore?.collection("$email")?.document(auth?.currentUser!!.email.toString())?.set(userInfomation)
-            Toast.makeText( context,"회원정보가 수정되었습니다.",Toast.LENGTH_SHORT).show()}
-
-        }
 
         val galleryImage = registerForActivityResult(
             ActivityResultContracts.GetContent(),
@@ -88,21 +64,34 @@ class editActivity : AppCompatActivity() {
             galleryImage.launch("image/*")
         }
         uploadGallery.setOnClickListener {
-            storageReference.getReference(FirebaseAuth.getInstance().currentUser!!.email.toString())
-                .child(FirebaseAuth.getInstance().currentUser!!.email.toString())
-                .putFile(uri)
-                .addOnSuccessListener { task ->
-                    task.metadata!!.reference!!.downloadUrl
-                        .addOnSuccessListener { uri ->
-                            val uid = FirebaseAuth.getInstance().currentUser!!.uid
-                            val imageMap = mapOf("url" to uri.toString())
-                            val databaseReference = FirebaseDatabase.getInstance().getReference("userImages")
-                            databaseReference.child(uid).setValue(imageMap)
-                            Toast.makeText( context,"회원사진이 수정되었습니다.",Toast.LENGTH_SHORT).show()
-                        }
-                }
-        }
-        }
+            var userInfomation = userInfo()
+            if (editTextName.text.isNotEmpty() && editTextAge.text.isNotEmpty() && editTextGender.text.isNotEmpty()) {
+                userInfomation.name = editTextName.text.toString()
+                userInfomation.age = editTextAge.text.toString()
+                userInfomation.gender = editTextGender.text.toString()
+                userInfomation.explanation = editExplanation.text.toString()
+                Firestore?.collection("$email")?.document(auth?.currentUser!!.email.toString())
+                    ?.set(userInfomation)
 
+                storageReference.getReference(FirebaseAuth.getInstance().currentUser!!.email.toString())
+                    .child(FirebaseAuth.getInstance().currentUser!!.email.toString())
+                    .putFile(uri)
+                    .addOnSuccessListener { task ->
+                        task.metadata!!.reference!!.downloadUrl
+                            .addOnSuccessListener { uri ->
+                                val uid = FirebaseAuth.getInstance().currentUser!!.uid
+                                val imageMap = mapOf("url" to uri.toString())
+                                val databaseReference =
+                                    FirebaseDatabase.getInstance().getReference("userImages")
+                                databaseReference.child(uid).setValue(imageMap)
+                            }
+                    }
+            }
+            val intentgoedit = Intent(this, MainActivity::class.java)
+            Toast.makeText(context, "회원정보가 수정되었습니다.", Toast.LENGTH_SHORT).show()
+            startActivity(intentgoedit)
+        }
 
     }
+
+}

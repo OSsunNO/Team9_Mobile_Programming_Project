@@ -144,9 +144,9 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                 lat = location!!.latitude//location!!.latitude
                 long = location.longitude//location.longitude
                 locationStr = location.toString()
-                Toast.makeText(mainActivity, locationStr, Toast.LENGTH_LONG).show()
+//                Toast.makeText(mainActivity, locationStr, Toast.LENGTH_LONG).show()
 //        CameraPosition.builder().target(place).zoom(100.0f).build()
-                Log.d("abc", "$lat, $long")
+//                Log.d("abc", "$lat, $long")
             }
             // first attempt일 때는 false 두 번째 시도부터 true
             shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION") -> {
@@ -170,9 +170,9 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                 lat = location!!.latitude//location!!.latitude
                 long = location.longitude//location.longitude
                 locationStr = location.toString()
-                Toast.makeText(mainActivity, locationStr, Toast.LENGTH_LONG).show()
+//                Toast.makeText(mainActivity, locationStr, Toast.LENGTH_LONG).show()
 //        CameraPosition.builder().target(place).zoom(100.0f).build()
-                Log.d("abc", "$lat, $long")
+//                Log.d("abc", "$lat, $long")
             }
             // first attempt일 때는 false 두 번째 시도부터 true
             shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION") -> {
@@ -210,15 +210,6 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         return addressList[0].getAddressLine(0).toString()
     }
 
-
-//    fun getDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Int {
-//        val dLat = toRadians(lat2 - lat1)
-//        val dLon = toRadians(lon2 - lon1)
-//        val a = sin(dLat / 2).pow(2.0) + sin(dLon / 2).pow(2.0) * cos(toRadians(lat1)) * cos(toRadians(lat2))
-//        val c = 2 * asin(sqrt(a))
-//        return (r * c).toInt()
-//    }
-
     // 내가 사용할 수 있는 Map이 GoogleMap 파라미터를 통해 전달
     @SuppressLint("SuspiciousIndentation","MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
@@ -231,7 +222,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         val place = LatLng(lat, long)
         // room DB에서 instances get
         val cctvNear = cctvDB.cctvDAO().getNear(lat,long)
-        Log.d("kk", "${cctvNear.size}")
+//        Log.d("kk", "${cctvNear.size}")
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 17f))
         // 현재위치에 띄울 마커
         val markerOptions = MarkerOptions().position(place).title(getCurrentAddress(place)).icon(BitmapDescriptorFactory.fromBitmap(myIcon))

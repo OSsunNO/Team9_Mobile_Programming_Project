@@ -4,12 +4,14 @@ import android.content.Intent
 import android.media.Image
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -83,6 +85,26 @@ class FragmentFour : Fragment() {
         val myemailaddress = FirebaseAuth.getInstance().currentUser!!.email.toString()
         val pathReference = storageReference.child("$myemailaddress/$myemailaddress")
 
+        gotoedit = requireView().findViewById(R.id.gotoedit)
+
+        gotoedit.setOnClickListener {
+            val intentgoedit = Intent(activity, editActivity::class.java)
+            startActivity(intentgoedit)
+        }
+
+        btnLogout = requireView().findViewById(R.id.logout)
+
+        btnLogout.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            googleSignInClient?.signOut()
+            var logoutIntent = Intent(context, LoginActivity::class.java)
+            logoutIntent.flags =
+                Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(logoutIntent)
+        }
+
+
+
         pathReference.downloadUrl.addOnSuccessListener { uri ->
             Glide.with(myimage.rootView)
                 .load(uri)
@@ -90,34 +112,12 @@ class FragmentFour : Fragment() {
                 .centerCrop()
                 .into(myimage)
 
-
-        btnLogout = requireView().findViewById(R.id.logout)
-
-        gotoedit = requireView().findViewById(R.id.gotoedit)
-
-    gotoedit.setOnClickListener {
-        val intentgoedit = Intent(activity, editActivity::class.java)
-        startActivity(intentgoedit)
-    }
-
-    btnLogout.setOnClickListener {
-        FirebaseAuth.getInstance().signOut()
-        googleSignInClient?.signOut()
-        var logoutIntent = Intent(context, LoginActivity::class.java)
-        logoutIntent.flags =
-            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(logoutIntent)
-    }
-}
-}
-
-    override fun onPause() {
-        super.onPause()
-
+        }
 
     }
 
 }
+
 
 
 
