@@ -64,22 +64,24 @@ class editActivity : AppCompatActivity() {
                 userInfomation.explanation = editExplanation.text.toString()
                 Firestore?.collection("$email")?.document(auth?.currentUser!!.email.toString())
                     ?.set(userInfomation)
-
-                storageReference.getReference(FirebaseAuth.getInstance().currentUser!!.email.toString())
-                    .child(FirebaseAuth.getInstance().currentUser!!.email.toString())
-                    .putFile(uri)
-                    .addOnSuccessListener { task ->
-                        task.metadata!!.reference!!.downloadUrl
-                            .addOnSuccessListener { uri ->
-                                val uid = FirebaseAuth.getInstance().currentUser!!.uid
-                                val imageMap = mapOf("url" to uri.toString())
-                                val databaseReference =
-                                    FirebaseDatabase.getInstance().getReference("userImages")
-                                databaseReference.child(uid).setValue(imageMap)
-                            }
-                    }
             }
+            storageReference.getReference(FirebaseAuth.getInstance().currentUser!!.email.toString())
+                .child(FirebaseAuth.getInstance().currentUser!!.email.toString())
+                .putFile(uri)
+                .addOnSuccessListener { task ->
+                    task.metadata!!.reference!!.downloadUrl
+                        .addOnSuccessListener { uri ->
+                            val uid = FirebaseAuth.getInstance().currentUser!!.uid
+                            val imageMap = mapOf("url" to uri.toString())
+                            val databaseReference =
+                                FirebaseDatabase.getInstance().getReference("userImages")
+                            databaseReference.child(uid).setValue(imageMap)
+                        }
+                }
             Toast.makeText(context, "회원정보가 수정되었습니다.", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
             finish()
         }
 

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.location.Address
+import android.location.Criteria
 import android.location.Geocoder
 import android.location.LocationManager
 import android.os.Bundle

@@ -74,6 +74,7 @@ class FragmentFour : Fragment() {
 
         gotoedit.setOnClickListener {
             val intentgoedit = Intent(activity, editActivity::class.java)
+//            intentgoedit.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intentgoedit)
         }
 
