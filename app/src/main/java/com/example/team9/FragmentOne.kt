@@ -26,8 +26,6 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import java.io.IOException
 import java.util.*
 
@@ -136,9 +134,6 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                 lat = location!!.latitude//location!!.latitude
                 long = location.longitude//location.longitude
                 locationStr = location.toString()
-//                Toast.makeText(mainActivity, locationStr, Toast.LENGTH_LONG).show()
-//        CameraPosition.builder().target(place).zoom(100.0f).build()
-//                Log.d("abc", "$lat, $long")
             }
             // first attempt일 때는 false 두 번째 시도부터 true
             shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION") -> {
@@ -162,9 +157,6 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                 lat = location!!.latitude//location!!.latitude
                 long = location.longitude//location.longitude
                 locationStr = location.toString()
-//                Toast.makeText(mainActivity, locationStr, Toast.LENGTH_LONG).show()
-//        CameraPosition.builder().target(place).zoom(100.0f).build()
-//                Log.d("abc", "$lat, $long")
             }
             // first attempt일 때는 false 두 번째 시도부터 true
             shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION") -> {
@@ -215,10 +207,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         var auth: FirebaseAuth? = null
         Firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-        var userInformation = userInfo()
         val myemail = FirebaseAuth.getInstance().currentUser!!.email.toString()
-//        val db = Firebase.firestore
-//        val mydata = db.collection("$myemail").document("$myemail")
 
         getLocationWithFine()
         val place = LatLng(lat, long)
@@ -257,7 +246,6 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
             map["address"] = getCurrentAddress(place1)
             Firestore.collection("$myemail")
                 .document(auth.currentUser!!.email.toString()).update(map)
-//        CameraPosition.builder().target(place).zoom(100.0f).build()
             val cctvNear1 = cctvDB.cctvDAO().getNear(lat,long)
             if (cctvNear1.size!=0){
                 for (i in 0..cctvNear1.size-1) {
@@ -274,21 +262,6 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                 Toast.makeText(mainActivity, "근처에 존재하는 CCTV가 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
-        // 구글맵에 띄울 마커 파이어스토어 ver
-        /*for (i in 1..46163) {
-            fireStore.collection("cctvs").document("cctvInfo$i")
-                .get().addOnSuccessListener { result ->
-                    val marker = MarkerOptions()
-                        .position(
-                            LatLng(
-                                result.get("latitude").toString().toDouble(),
-                                result.get("longitude").toString().toDouble()
-                            )
-                        )
-                        .title(result.get("address").toString())
-                    googleMap.addMarker(marker)
-                }
-        }*/
     }
 
     override fun onAttach(context: Context) {

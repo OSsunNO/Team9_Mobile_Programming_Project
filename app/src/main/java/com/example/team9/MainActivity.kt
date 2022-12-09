@@ -72,33 +72,8 @@ class MainActivity : AppCompatActivity() {
             }
             handler.postDelayed(handlerTask,3000)
         }
-//        supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
 
         requestPermission{}
-        /* try {
-     //val fragment : Fragment클래스 = supportFragmentManager.findFragmentById(R.id.프래그먼트컨테이너) as Fragment클래스
-
-     val fm = supportFragmentManager
-//            fm.executePendingTransactions()
-     val fragment : FragmentFour = fm.findFragmentById(R.layout.fragment_four) as FragmentFour
-     SensorSwitch = fragment.requireView().findViewById(R.id.toggleButton)
-     SensorSwitch.setOnCheckedChangeListener { _, isChecked ->
-         if (isChecked) {
-             sensorFlag = 1
-         } else {
-             sensorFlag = 0
-         }
-     }
- }
- catch(e: Exception) {
-     Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
- }*/
-
-        // load the cctv data using roomDB
-        // If the user launch the application first, he or she have to use this method for saving the cctv data into their RoomDB
-//        readExcelFileFromAssets()
-
-
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
@@ -138,27 +113,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         Log.d("ITM", "Hello")
-
-
-
-
-        // the code for uploading the cctv data to firestore
-        /*val db = Firebase.firestore
-
-        for (i in 1..excelList.size-1 ) {
-            var cctv = hashMapOf(
-                "num" to excelList[i].num,
-                "address" to excelList[i].address,
-                "cameraNum" to excelList[i].cameraNum,
-                "latitude" to excelList[i].latitude,
-                "longitude" to excelList[i].longitude
-            )
-
-            db.collection("cctvs").document("cctvInfo$i")
-                .set(cctv)
-                .addOnSuccessListener { Log.d("firestore", "Success!") }
-                .addOnFailureListener { e-> Log.w("firestore", "Error", e) }
-        }*/
     }
     private val sensorListener: SensorEventListener = object : SensorEventListener {
         @RequiresApi(Build.VERSION_CODES.M)
@@ -227,9 +181,6 @@ class MainActivity : AppCompatActivity() {
         builder.setPositiveButton("신고"){
                 p0, p1->
             startActivity(intentgo)
-            //주석 없애면 handler로 시간초 설정할 수 있어
-            //위 코드는 delay 사용 아래는 미사용 둘 중 하나만 선택
-//            requestPermission {startActivity(intent)}
             handler.removeCallbacks(handlerTask)
             startActivity(intent)
             sensorFlag = 1
@@ -274,12 +225,8 @@ class MainActivity : AppCompatActivity() {
     //fragment chaging function
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
-
     }
 
-
-//    data class CCTVLocation(val num:String, val address:String,
-//                            val cameraNum:String, val latitude:String, val longitude:String)
 
     private fun readExcelFileFromAssets(): Unit {
         var itemList: MutableList<CCTV> = mutableListOf();
