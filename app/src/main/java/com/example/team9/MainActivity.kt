@@ -172,12 +172,10 @@ class MainActivity : AppCompatActivity() {
             sensorFlag=1
         }
 
-
         val alertDialog: AlertDialog = builder.create()
 
 
         alertDialog.show()
-
 
     }
 
@@ -205,7 +203,6 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
 
     }
-
 
     data class CCTVLocation(val num:String, val address:String,
                             val cameraNum:String, val latitude:String, val longitude:String)
@@ -268,6 +265,5 @@ class MainActivity : AppCompatActivity() {
         }
         return itemList
     }
-
 }
 
