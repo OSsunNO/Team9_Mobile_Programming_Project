@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
+import com.google.rpc.context.AttributeContext.Resource
 import kotlinx.android.synthetic.main.fragment_one.view.*
 import java.io.IOException
 import java.lang.Math.*
@@ -68,6 +69,11 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     private val mapIcon by lazy{
         val drawable = ResourcesCompat.getDrawable(resources, R.drawable.cctv, null) as BitmapDrawable
         Bitmap.createScaledBitmap(drawable.bitmap, 64, 64, false)
+    }
+
+    private val myIcon by lazy{
+        val drawble2 = ResourcesCompat.getDrawable(resources, R.drawable.user, null) as BitmapDrawable
+        Bitmap.createScaledBitmap(drawble2.bitmap, 144, 144, false)
     }
     lateinit var gpsButton: ImageButton
 
@@ -228,7 +234,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         Log.d("kk", "${cctvNear.size}")
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 17f))
         // 현재위치에 띄울 마커
-        val markerOptions = MarkerOptions().position(place).title(getCurrentAddress(place))
+        val markerOptions = MarkerOptions().position(place).title(getCurrentAddress(place)).icon(BitmapDescriptorFactory.fromBitmap(myIcon))
         currentMarker = googleMap.addMarker(markerOptions)!!
         // 구글맵에 띄울 마커 roomDB ver
         if (cctvNear.size!=0){
@@ -241,9 +247,6 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                 ).title(cctvNear[i].address).icon(BitmapDescriptorFactory.fromBitmap(mapIcon))
                 cctvMarker = googleMap.addMarker(markerOptionsForCCTV)!!
             }
-        }
-        else {
-            Toast.makeText(mainActivity, "근처에 존재하는 CCTV가 없습니다.", Toast.LENGTH_SHORT).show()
         }
 //        val aroundCCTV = cctvDB.cctvDAO().getAroundCCTV(lat, long)
 //        for (i in 0..aroundCCTV.size) {
@@ -259,10 +262,10 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         gpsButton.setOnClickListener {
             getLocationWithFine()
             val place1 = LatLng(lat, long)
-            val markerOptions1 = MarkerOptions().position(place1).title(getCurrentAddress(place1))
+            val markerOptions1 = MarkerOptions().position(place1).title(getCurrentAddress(place1)).icon(BitmapDescriptorFactory.fromBitmap(myIcon))
             currentMarker.remove()
             cctvMarker.remove()
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place1, 15f))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place1, 17f))
             currentMarker = googleMap.addMarker(markerOptions1)!!
 //        CameraPosition.builder().target(place).zoom(100.0f).build()
             val cctvNear1 = cctvDB.cctvDAO().getNear(lat,long)

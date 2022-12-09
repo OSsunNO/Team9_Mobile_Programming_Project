@@ -3,6 +3,7 @@ package com.example.team9
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -67,6 +68,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+
+        var pref = getSharedPreferences("checkFirst", Activity.MODE_PRIVATE)
+        var checkFirst = pref.getBoolean("checkFirst", true)
+        if (checkFirst == true){
+            readExcelFileFromAssets()
+            pref.edit().putBoolean("checkFirst",false).apply()
+            val handler = Handler(Looper.getMainLooper())
+            val handlerTask = object : Runnable {
+                override fun run() {
+                    supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
+                }
+            }
+            handler.postDelayed(handlerTask,2000)
+        }
+//        supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
+        requestPermission{}
        /* try {
             //val fragment : Fragment클래스 = supportFragmentManager.findFragmentById(R.id.프래그먼트컨테이너) as Fragment클래스
 
@@ -89,8 +107,6 @@ class MainActivity : AppCompatActivity() {
         // load the cctv data using roomDB
         // If the user launch the application first, he or she have to use this method for saving the cctv data into their RoomDB
 //        readExcelFileFromAssets()
-
-        requestPermission{}
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
