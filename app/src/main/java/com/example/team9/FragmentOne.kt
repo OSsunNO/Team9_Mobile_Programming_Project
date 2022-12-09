@@ -22,16 +22,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
-import com.google.rpc.context.AttributeContext.Resource
-import kotlinx.android.synthetic.main.fragment_one.view.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import java.io.IOException
-import java.lang.Math.*
 import java.util.*
-import javax.annotation.Nullable
-import kotlin.math.pow
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -55,22 +53,16 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     lateinit var permLauncher: ActivityResultLauncher<String>
     lateinit var locationStr: String
 
-    private val r = 6372.8 * 1000
     var lat = 0.0
     var long = 0.0
     lateinit var currentMarker: Marker
     lateinit var cctvMarker: Marker
     val cctvDB: CCTVDB by lazy { CCTVDB.getInstance(requireContext()) } // initiating the database
-//    private val mapIcon by lazy {
-//        val drawable =
-//            ResourcesCompat.getDrawable(resources, R.drawable.mapicon, null) as BitmapDrawable
-//        Bitmap.createScaledBitmap(drawable.bitmap, 64, 64, false)
-//    }
+
     private val mapIcon by lazy{
         val drawable = ResourcesCompat.getDrawable(resources, R.drawable.cctv, null) as BitmapDrawable
         Bitmap.createScaledBitmap(drawable.bitmap, 64, 64, false)
     }
-
     private val myIcon by lazy{
         val drawble2 = ResourcesCompat.getDrawable(resources, R.drawable.user1, null) as BitmapDrawable
         Bitmap.createScaledBitmap(drawble2.bitmap, 144, 144, false)
@@ -218,6 +210,16 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         // val fireStore = FirebaseFirestore.getInstance()
 
         // 경도/위도 기반 위치 저장
+
+        var Firestore: FirebaseFirestore? = null
+        var auth: FirebaseAuth? = null
+        Firestore = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
+        var userInformation = userInfo()
+        val myemail = FirebaseAuth.getInstance().currentUser!!.email.toString()
+//        val db = Firebase.firestore
+//        val mydata = db.collection("$myemail").document("$myemail")
+
         getLocationWithFine()
         val place = LatLng(lat, long)
         // room DB에서 instances get
@@ -227,6 +229,10 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         // 현재위치에 띄울 마커
         val markerOptions = MarkerOptions().position(place).title(getCurrentAddress(place)).icon(BitmapDescriptorFactory.fromBitmap(myIcon))
         currentMarker = googleMap.addMarker(markerOptions)!!
+        var map = mutableMapOf<String,Any>()
+        map["address"] = getCurrentAddress(place)
+        Firestore.collection("$myemail")
+            .document(auth.currentUser!!.email.toString()).update(map)
         // 구글맵에 띄울 마커 roomDB ver
         if (cctvNear.size!=0){
             for (i in 0..cctvNear.size-1) {
@@ -239,17 +245,6 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                 cctvMarker = googleMap.addMarker(markerOptionsForCCTV)!!
             }
         }
-//        val aroundCCTV = cctvDB.cctvDAO().getAroundCCTV(lat, long)
-//        for (i in 0..aroundCCTV.size) {
-//            val marker = MarkerOptions().position(
-//                LatLng(
-//                    aroundCCTV[i].latitude,
-//                    aroundCCTV[i].longitude
-//                )
-//            ).title(aroundCCTV[i].address).icon(BitmapDescriptorFactory.fromBitmap(mapIcon))
-//
-//            googleMap.addMarker(marker)
-//        }
         gpsButton.setOnClickListener {
             getLocationWithFine()
             val place1 = LatLng(lat, long)
@@ -258,6 +253,10 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
             cctvMarker.remove()
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place1, 17f))
             currentMarker = googleMap.addMarker(markerOptions1)!!
+            var map = mutableMapOf<String,Any>()
+            map["address"] = getCurrentAddress(place1)
+            Firestore.collection("$myemail")
+                .document(auth.currentUser!!.email.toString()).update(map)
 //        CameraPosition.builder().target(place).zoom(100.0f).build()
             val cctvNear1 = cctvDB.cctvDAO().getNear(lat,long)
             if (cctvNear1.size!=0){

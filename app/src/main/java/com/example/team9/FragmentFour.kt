@@ -1,35 +1,24 @@
 package com.example.team9
 
 import android.content.Intent
-import android.media.Image
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
 
 
 class FragmentFour : Fragment() {
-    lateinit var mainActivity: MainActivity
-    private lateinit var imageView: ImageView
-    private lateinit var uri: Uri
     private lateinit var btnLogout: Button
     private lateinit var gotoedit: Button
     private lateinit var myimage: ImageView
@@ -39,10 +28,6 @@ class FragmentFour : Fragment() {
     private lateinit var genderText: TextView
     private lateinit var explanationText: TextView
     var googleSignInClient: GoogleSignInClient? = null
-
-    private var storageReference = Firebase.storage
-    var auth: FirebaseAuth? = null
-    var Firestore: FirebaseFirestore? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,8 +87,6 @@ class FragmentFour : Fragment() {
                 Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(logoutIntent)
         }
-
-
 
         pathReference.downloadUrl.addOnSuccessListener { uri ->
             Glide.with(myimage.rootView)

@@ -14,30 +14,18 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.telephony.SmsManager
-import android.telephony.SmsMessage
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.Toast
-import android.widget.ToggleButton
-import android.widget.Toolbar
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.maps.MapView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.firestore.FirebaseFirestore
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import com.gun0912.tedpermission.provider.TedPermissionProvider.context
-import kotlinx.android.synthetic.main.fragment_four.*
 import org.apache.poi.hssf.usermodel.HSSFCell
 import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -58,8 +46,6 @@ class MainActivity : AppCompatActivity() {
 
     val cctvDB: CCTVDB by lazy {CCTVDB.getInstance(this)}
 
-
-    private lateinit var SensorSwitch: ToggleButton
     private var sensorManager: SensorManager? = null
     private var acceleration = 0f
     private var currentAcceleration = 0f
@@ -84,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
                 }
             }
-            handler.postDelayed(handlerTask,2000)
+            handler.postDelayed(handlerTask,3000)
         }
 //        supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
 
@@ -219,7 +205,7 @@ class MainActivity : AppCompatActivity() {
         builder.setTitle("신고하시겠습니까?")
 
         val intent = Intent(Intent.ACTION_CALL).apply{
-            data = Uri.parse("tel:01066930480")
+            data = Uri.parse("tel:114")
         }
         val intentgo = Intent(this,textActivity::class.java)
 
@@ -244,6 +230,7 @@ class MainActivity : AppCompatActivity() {
             //주석 없애면 handler로 시간초 설정할 수 있어
             //위 코드는 delay 사용 아래는 미사용 둘 중 하나만 선택
 //            requestPermission {startActivity(intent)}
+            handler.removeCallbacks(handlerTask)
             startActivity(intent)
             sensorFlag = 1
         }
