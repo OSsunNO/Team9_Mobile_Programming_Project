@@ -27,8 +27,10 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.fragment_one.view.*
 import java.io.IOException
+import java.lang.Math.*
 import java.util.*
 import javax.annotation.Nullable
+import kotlin.math.pow
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -51,9 +53,12 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     lateinit var mainActivity: MainActivity // context
     lateinit var permLauncher: ActivityResultLauncher<String>
     lateinit var locationStr: String
+
+    private val r = 6372.8 * 1000
     var lat = 0.0
     var long = 0.0
     lateinit var currentMarker: Marker
+    lateinit var cctvMarker: Marker
     val cctvDB: CCTVDB by lazy { CCTVDB.getInstance(requireContext()) } // initiating the database
 //    private val mapIcon by lazy {
 //        val drawable =
@@ -121,10 +126,15 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     @SuppressLint("SuspiciousIndentation","MissingPermission")
     fun getLocationWithFine(){
         when {
-            ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
-                val locationManager = mainActivity.getSystemService(LOCATION_SERVICE) as LocationManager
-                val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                    ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            ContextCompat.checkSelfPermission(
+                mainActivity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                val locationManager =
+                    mainActivity.getSystemService(LOCATION_SERVICE) as LocationManager
+                val location =
+                    locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                        ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
                 lat = location!!.latitude//location!!.latitude
                 long = location.longitude//location.longitude
                 locationStr = location.toString()
@@ -141,6 +151,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                 permLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
+
     }
 
     @SuppressLint("SuspiciousIndentation","MissingPermission")
@@ -193,6 +204,15 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         return addressList[0].getAddressLine(0).toString()
     }
 
+
+//    fun getDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Int {
+//        val dLat = toRadians(lat2 - lat1)
+//        val dLon = toRadians(lon2 - lon1)
+//        val a = sin(dLat / 2).pow(2.0) + sin(dLon / 2).pow(2.0) * cos(toRadians(lat1)) * cos(toRadians(lat2))
+//        val c = 2 * asin(sqrt(a))
+//        return (r * c).toInt()
+//    }
+
     // 내가 사용할 수 있는 Map이 GoogleMap 파라미터를 통해 전달
     @SuppressLint("SuspiciousIndentation","MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
@@ -200,25 +220,30 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         // 파이어 스토어에서 intances get
         // val fireStore = FirebaseFirestore.getInstance()
 
-        // room DB에서 instances get
-        val cctvData = cctvDB.cctvDAO().getAll()
         // 경도/위도 기반 위치 저장
         getLocationWithFine()
         val place = LatLng(lat, long)
+        // room DB에서 instances get
+        val cctvNear = cctvDB.cctvDAO().getNear(lat,long)
+        Log.d("kk", "${cctvNear.size}")
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 17f))
         // 현재위치에 띄울 마커
         val markerOptions = MarkerOptions().position(place).title(getCurrentAddress(place))
         currentMarker = googleMap.addMarker(markerOptions)!!
         // 구글맵에 띄울 마커 roomDB ver
-        for (i in 1..100) {
-            val marker = MarkerOptions().position(
-                LatLng(
-                    cctvData[i].latitude,
-                    cctvData[i].longitude
-                )
-            ).title(cctvData[i].address).icon(BitmapDescriptorFactory.fromBitmap(mapIcon))
-
-            googleMap.addMarker(marker)
+        if (cctvNear.size!=0){
+            for (i in 0..cctvNear.size-1) {
+                val markerOptionsForCCTV = MarkerOptions().position(
+                    LatLng(
+                        cctvNear[i].latitude,
+                        cctvNear[i].longitude
+                    )
+                ).title(cctvNear[i].address).icon(BitmapDescriptorFactory.fromBitmap(mapIcon))
+                cctvMarker = googleMap.addMarker(markerOptionsForCCTV)!!
+            }
+        }
+        else {
+            Toast.makeText(mainActivity, "근처에 존재하는 CCTV가 없습니다.", Toast.LENGTH_SHORT).show()
         }
 //        val aroundCCTV = cctvDB.cctvDAO().getAroundCCTV(lat, long)
 //        for (i in 0..aroundCCTV.size) {
@@ -231,16 +256,30 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
 //
 //            googleMap.addMarker(marker)
 //        }
-//37.6306661, 127.0814362
         gpsButton.setOnClickListener {
-            getLocationWithCoarse()
             getLocationWithFine()
             val place1 = LatLng(lat, long)
             val markerOptions1 = MarkerOptions().position(place1).title(getCurrentAddress(place1))
             currentMarker.remove()
+            cctvMarker.remove()
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place1, 15f))
             currentMarker = googleMap.addMarker(markerOptions1)!!
 //        CameraPosition.builder().target(place).zoom(100.0f).build()
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place1, 17f))
+            val cctvNear1 = cctvDB.cctvDAO().getNear(lat,long)
+            if (cctvNear1.size!=0){
+                for (i in 0..cctvNear1.size-1) {
+                    val markerOptionsForCCTV1 = MarkerOptions().position(
+                        LatLng(
+                            cctvNear1[i].latitude,
+                            cctvNear1[i].longitude
+                        )
+                    ).title(cctvNear1[i].address).icon(BitmapDescriptorFactory.fromBitmap(mapIcon))
+                    cctvMarker = googleMap.addMarker(markerOptionsForCCTV1)!!
+                }
+            }
+            else {
+                Toast.makeText(mainActivity, "근처에 존재하는 CCTV가 없습니다.", Toast.LENGTH_SHORT).show()
+            }
         }
         // 구글맵에 띄울 마커 파이어스토어 ver
         /*for (i in 1..46163) {

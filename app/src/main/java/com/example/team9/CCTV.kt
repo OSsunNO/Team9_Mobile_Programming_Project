@@ -8,7 +8,7 @@ data class CCTV (
     var address: String,
     var cameraNum: String,
     var latitude: Double,
-    var longitude: Double,
+    var longitude: Double
 )
 
 
