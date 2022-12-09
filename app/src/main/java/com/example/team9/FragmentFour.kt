@@ -1,89 +1,138 @@
 package com.example.team9
 
-import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.content.ContextCompat
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.android.synthetic.main.fragment_four.*
-import kotlinx.android.synthetic.main.fragment_four.view.*
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.jar.Manifest
+
 
 class FragmentFour : Fragment() {
-    // TODO: Rename and change types of parameters
+    private lateinit var btnLogout: Button
+    private lateinit var gotoedit: Button
+    private lateinit var myimage: ImageView
 
-    private var viewProfile : View? = null
-    var pickImageFromAlbum =0
-    var fbStorage : FirebaseStorage? = null
-    var uriPhoto : Uri? = null
-
+    private lateinit var nameText: TextView
+    private lateinit var ageText: TextView
+    private lateinit var genderText: TextView
+    private lateinit var explanationText: TextView
+    var googleSignInClient: GoogleSignInClient? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewProfile = inflater.inflate(R.layout.fragment_four,container,false)
-
-        fbStorage = FirebaseStorage.getInstance()
-
-        viewProfile!!.uploadButton.setOnClickListener {
-            var photoPickerIntent = Intent(Intent.ACTION_PICK)
-            photoPickerIntent.type = "image/*"
-            startActivityForResult(photoPickerIntent, pickImageFromAlbum)
-        }
-        return viewProfile
+        return inflater.inflate(R.layout.fragment_four, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    // Inflate the layout for this fragment
+        val db = Firebase.firestore
+        val myemail = FirebaseAuth.getInstance().currentUser!!.email.toString()
+        val mydata = db.collection("$myemail").document("$myemail")
+        nameText = requireView().findViewById(R.id.NameText)
+        ageText = requireView().findViewById(R.id.AgeText)
+        genderText = requireView().findViewById(R.id.GenderText)
+        explanationText = requireView().findViewById(R.id.explanationText)
 
+        mydata.addSnapshotListener { value, error ->
+            if (value != null && value.exists()) {
+                val a = value.data!!["name"].toString()
+                val b = value.data!!["age"].toString()
+                val c = value.data!!["gender"].toString()
+                val d = value.data!!["explanation"].toString()
 
-    companion object {
+                nameText.text = a
+                ageText.text = b
+                genderText.text = c
+                explanationText.text =d
+            }}
 
+        myimage=requireView().findViewById(R.id.myimage)
+        val storage: FirebaseStorage = FirebaseStorage.getInstance("gs://team9-ac4b9.appspot.com")
+        val storageReference = storage.reference
+        val myemailaddress = FirebaseAuth.getInstance().currentUser!!.email.toString()
+        val pathReference = storageReference.child("$myemailaddress/$myemailaddress")
 
-    }
+        gotoedit = requireView().findViewById(R.id.gotoedit)
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if(requestCode==pickImageFromAlbum){
-            if(resultCode == Activity.RESULT_OK){
-                //path for the selected image
-                uriPhoto = data?.data
-                myimage.setImageURI(uriPhoto)
-
-                if(ContextCompat.checkSelfPermission(viewProfile!!.context,android.Manifest.permission.READ_EXTERNAL_STORAGE)==PackageManager.PERMISSION_GRANTED){
-                    funImageUpload(viewProfile!!)
-                }
-            }
-            else{
-
-            }
+        gotoedit.setOnClickListener {
+            val intentgoedit = Intent(activity, editActivity::class.java)
+            startActivity(intentgoedit)
         }
-    }
 
-    private fun funImageUpload(viewProfile: View) {
-        var timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        var imgFileName = "IMAGE_" + timeStamp + "_.png"
-        var storageRef = fbStorage?.reference?.child("images")?.child(imgFileName)
+        btnLogout = requireView().findViewById(R.id.logout)
 
-        storageRef?.putFile(uriPhoto!!)?.addOnSuccessListener {
-            Toast.makeText(view?.context, "image Upload", Toast.LENGTH_SHORT).show()
+        btnLogout.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            googleSignInClient?.signOut()
+            var logoutIntent = Intent(context, LoginActivity::class.java)
+            logoutIntent.flags =
+                Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(logoutIntent)
         }
+
+        pathReference.downloadUrl.addOnSuccessListener { uri ->
+            Glide.with(myimage.rootView)
+                .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .centerCrop()
+                .into(myimage)
+
+        }
+
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
