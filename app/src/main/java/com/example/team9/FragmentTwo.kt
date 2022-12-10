@@ -53,7 +53,7 @@ class FragmentTwo : Fragment() {
 
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireActivity())
 
-        builder.setTitle("싸이렌")
+        builder.setTitle("사이렌")
 
 
         val inflater: LayoutInflater = layoutInflater

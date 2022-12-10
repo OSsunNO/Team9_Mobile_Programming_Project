@@ -4,13 +4,17 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.location.Address
+import android.location.Criteria
 import android.location.Geocoder
+import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,9 +23,13 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.location.LocationManagerCompat.requestLocationUpdates
 import androidx.fragment.app.Fragment
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.firebase.auth.FirebaseAuth
@@ -45,6 +53,11 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    private var mFusedLocationProviderClient: FusedLocationProviderClient? = null // 현재 위치를 가져오기 위한 변수
+    lateinit var mLastLocation: Location // 위치 값을 가지고 있는 객체
+    internal lateinit var mLocationRequest: LocationRequest // 위치 정보 요청의 매개변수를 저장하는
+    private val REQUEST_PERMISSION_LOCATION = 10
 
     private lateinit var mMap: MapView
     lateinit var mainActivity: MainActivity // context
@@ -102,6 +115,18 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         return rootView
     }
 
+    // 시스템으로 부터 위치 정보를 콜백으로 받음
+    private val mLocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            Log.d("ITM", "onLocationResult()")
+            // 시스템에서 받은 location 정보를 onLocationChanged()에 전달
+            locationResult.lastLocation
+            lat = locationResult.lastLocation!!.latitude
+            long = locationResult.lastLocation!!.longitude
+        }
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -119,6 +144,16 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
             }
     }
 
+    fun getGpsState(): Boolean{
+        var gpsEnable = false
+        var manager = mainActivity.getSystemService(LOCATION_SERVICE) as LocationManager
+        if(manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            gpsEnable = true
+        }
+        return gpsEnable
+    }
+
+
     @SuppressLint("SuspiciousIndentation","MissingPermission")
     fun getLocationWithFine(){
         when {
@@ -131,9 +166,23 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                 val location =
                     locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                         ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-                lat = location!!.latitude//location!!.latitude
-                long = location.longitude//location.longitude
-                locationStr = location.toString()
+                if (location!=null) {
+                    lat = location!!.latitude//location!!.latitude
+                    long = location.longitude//location.longitude
+                    locationStr = location.toString()
+                }
+                else{
+                    if(getGpsState()){
+                        if (mFusedLocationProviderClient == null) {
+                            mFusedLocationProviderClient =
+                                LocationServices.getFusedLocationProviderClient(mainActivity)
+                        }
+                        mFusedLocationProviderClient!!.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
+                    }
+                    else{
+                        Toast.makeText(mainActivity,"GPS 혹은 네트워크 설정이 꺼져있습니다.",Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
             // first attempt일 때는 false 두 번째 시도부터 true
             shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION") -> {
@@ -169,6 +218,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         }
     }
 
+
     fun getCurrentAddress(latlng: LatLng): String {
         // 위치 정보와 지역으로부터 주소 문자열을 구한다.
         var addressList: List<Address>? = null
@@ -193,15 +243,35 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         }
         return addressList[0].getAddressLine(0).toString()
     }
+    @SuppressLint("MissingPermission")
+    protected fun startLocationUpdates() {
+        Log.d("ITM", "startLocationUpdates()")
+
+        //FusedLocationProviderClient의 인스턴스를 생성.
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mainActivity)
+        if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(mainActivity,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("ITM", "startLocationUpdates() 두 위치 권한중 하나라도 없는 경우 ")
+            return
+        }
+        Log.d("ITM", "startLocationUpdates() 위치 권한이 하나라도 존재하는 경우")
+        // 기기의 위치에 관한 정기 업데이트를 요청하는 메서드 실행
+        // 지정한 루퍼 스레드(Looper.myLooper())에서 콜백(mLocationCallback)으로 위치 업데이트를 요청합니다.
+        mFusedLocationProviderClient!!.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
+    }
+
+
 
     // 내가 사용할 수 있는 Map이 GoogleMap 파라미터를 통해 전달
     @SuppressLint("SuspiciousIndentation","MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
 
-        // 파이어 스토어에서 intances get
-        // val fireStore = FirebaseFirestore.getInstance()
-
-        // 경도/위도 기반 위치 저장
+        mLocationRequest =  LocationRequest.create().apply {
+            interval = 100 // 업데이트 간격 단위(밀리초)
+            fastestInterval = 10 // 가장 빠른 업데이트 간격 단위(밀리초)
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY // 정확성
+            maxWaitTime= 100 // 위치 갱신 요청 최대 대기 시간 (밀리초)
+        }
 
         var Firestore: FirebaseFirestore? = null
         var auth: FirebaseAuth? = null
@@ -209,15 +279,30 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
         auth = FirebaseAuth.getInstance()
         val myemail = FirebaseAuth.getInstance().currentUser!!.email.toString()
 
-        getLocationWithFine()
+
+        if(getGpsState()){
+            getLocationWithFine()
+        }
+        else{
+            Toast.makeText(mainActivity,"GPS 혹은 네트워크 설정이 꺼져있습니다.",Toast.LENGTH_SHORT).show()
+        }
+
+        if(lat ==0.0 || long ==0.0) {
+            Toast.makeText(
+                mainActivity,
+                "위치를 불러오는 데에 실패했습니다. 잠시 후 위치 갱신 버튼을 눌러 위치를 불러와주세요.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
         val place = LatLng(lat, long)
         // room DB에서 instances get
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 17f))
         val cctvNear = cctvDB.cctvDAO().getNear(lat,long)
 //        Log.d("kk", "${cctvNear.size}")
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 17f))
         // 현재위치에 띄울 마커
         val markerOptions = MarkerOptions().position(place).title(getCurrentAddress(place)).icon(BitmapDescriptorFactory.fromBitmap(myIcon))
         currentMarker = googleMap.addMarker(markerOptions)!!
+
         var map = mutableMapOf<String,Any>()
         map["address"] = getCurrentAddress(place)
         Firestore.collection("$myemail")
@@ -234,12 +319,20 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                 cctvMarker = googleMap.addMarker(markerOptionsForCCTV)!!
             }
         }
+
         gpsButton.setOnClickListener {
-            getLocationWithFine()
+            if(getGpsState()){
+                getLocationWithFine()
+            }
+            else{
+                Toast.makeText(mainActivity,"GPS 혹은 네트워크 설정이 꺼져있습니다.",Toast.LENGTH_SHORT).show()
+            }
             val place1 = LatLng(lat, long)
             val markerOptions1 = MarkerOptions().position(place1).title(getCurrentAddress(place1)).icon(BitmapDescriptorFactory.fromBitmap(myIcon))
             currentMarker.remove()
-            cctvMarker.remove()
+            if (cctvNear.size!=0) {
+                cctvMarker.remove()
+            }
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place1, 17f))
             currentMarker = googleMap.addMarker(markerOptions1)!!
             var map = mutableMapOf<String,Any>()

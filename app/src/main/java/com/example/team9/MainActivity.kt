@@ -57,21 +57,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-
         var pref = getSharedPreferences("checkFirst", Activity.MODE_PRIVATE)
         var checkFirst = pref.getBoolean("checkFirst", true)
         if (checkFirst == true){
-            readExcelFileFromAssets()
             pref.edit().putBoolean("checkFirst",false).apply()
-            val handler = Handler(Looper.getMainLooper())
-            val handlerTask = object : Runnable {
-                override fun run() {
-                    supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
-                }
-            }
-            handler.postDelayed(handlerTask,3000)
+            readExcelFileFromAssets()
+            Toast.makeText(this,"초기 설정 완료. 위치 갱신 버튼을 눌러 현재 위치를 불러와주세요.",Toast.LENGTH_LONG).show()
         }
+
 
         requestPermission{}
 
@@ -167,8 +160,12 @@ class MainActivity : AppCompatActivity() {
 
         val handlerTask = object : Runnable {
             override fun run() {
+                intentgo.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intentgo)
+                finish()
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intent)
+                finish()
             }
         }
 
@@ -180,9 +177,13 @@ class MainActivity : AppCompatActivity() {
 
         builder.setPositiveButton("신고"){
                 p0, p1->
+            intentgo.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intentgo)
+            finish()
             handler.removeCallbacks(handlerTask)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
+            finish()
             sensorFlag = 1
         }
         //주석 없애면 handler로 시간초 설정할 수 있어

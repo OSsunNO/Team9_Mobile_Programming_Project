@@ -44,6 +44,7 @@ class textActivity : AppCompatActivity() {
         }
             val intentgomain = Intent(this,MainActivity::class.java)
             startActivity(intentgomain)
+            intentgomain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             finish()
         }
 
