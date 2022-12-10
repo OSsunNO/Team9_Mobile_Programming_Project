@@ -20,7 +20,7 @@ abstract class CCTVDB: RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     CCTVDB::class.java,
-                    "lotto_database"
+                    "cctv_database"
                 ).allowMainThreadQueries()
                     .fallbackToDestructiveMigration()
                     .build()

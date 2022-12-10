@@ -57,21 +57,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-
         var pref = getSharedPreferences("checkFirst", Activity.MODE_PRIVATE)
         var checkFirst = pref.getBoolean("checkFirst", true)
         if (checkFirst == true){
             pref.edit().putBoolean("checkFirst",false).apply()
             readExcelFileFromAssets()
-            val handler = Handler(Looper.getMainLooper())
-            val handlerTask = object : Runnable {
-                override fun run() {
-                    supportFragmentManager.beginTransaction().add(frame.id,FragmentOne()).commit()
-                    requestPermission{}
-                }
-            }
-            handler.postDelayed(handlerTask,10000)
+            Toast.makeText(this,"초기 설정 완료. 위치 갱신 버튼을 눌러 현재 위치를 불러와주세요.",Toast.LENGTH_LONG).show()
         }
 
 
