@@ -146,7 +146,7 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
 
     fun getGpsState(): Boolean{
         var gpsEnable = false
-        var manager = mainActivity.getSystemService(LOCATION_SERVICE) as LocationManager
+        val manager = mainActivity.getSystemService(LOCATION_SERVICE) as LocationManager
         if(manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
             gpsEnable = true
         }
@@ -167,20 +167,17 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
                     locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                         ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
                 if (location!=null) {
-                    lat = location!!.latitude//location!!.latitude
-                    long = location.longitude//location.longitude
+                    lat = location.latitude
+                    long = location.longitude
                     locationStr = location.toString()
                 }
                 else{
                     if(getGpsState()){
-                        if (mFusedLocationProviderClient == null) {
-                            mFusedLocationProviderClient =
-                                LocationServices.getFusedLocationProviderClient(mainActivity)
-                        }
+                        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mainActivity)
                         mFusedLocationProviderClient!!.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
                     }
                     else{
-                        Toast.makeText(mainActivity,"GPS 혹은 네트워크 설정이 꺼져있습니다.",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(mainActivity,"GPS 설정이 꺼져있습니다. GPS를 켜주세요.",Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -281,10 +278,11 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
 
 
         if(getGpsState()){
+            startLocationUpdates()
             getLocationWithFine()
         }
         else{
-            Toast.makeText(mainActivity,"GPS 혹은 네트워크 설정이 꺼져있습니다.",Toast.LENGTH_SHORT).show()
+            Toast.makeText(mainActivity,"GPS 설정이 꺼져있습니다. GPS를 켜주세요.",Toast.LENGTH_SHORT).show()
         }
 
         if(lat ==0.0 || long ==0.0) {
@@ -322,10 +320,18 @@ class FragmentOne : Fragment(), OnMapReadyCallback {
 
         gpsButton.setOnClickListener {
             if(getGpsState()){
+                startLocationUpdates()
                 getLocationWithFine()
             }
             else{
-                Toast.makeText(mainActivity,"GPS 혹은 네트워크 설정이 꺼져있습니다.",Toast.LENGTH_SHORT).show()
+                Toast.makeText(mainActivity,"GPS 설정이 꺼져있습니다. GPS를 켜주세요.",Toast.LENGTH_SHORT).show()
+            }
+            if(lat ==0.0 || long ==0.0) {
+                Toast.makeText(
+                    mainActivity,
+                    "위치를 불러오는 데에 실패했습니다. 잠시 후 위치 갱신 버튼을 눌러 위치를 불러와주세요.",
+                    Toast.LENGTH_LONG
+                ).show()
             }
             val place1 = LatLng(lat, long)
             val markerOptions1 = MarkerOptions().position(place1).title(getCurrentAddress(place1)).icon(BitmapDescriptorFactory.fromBitmap(myIcon))
